@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:noko_prototype/src/constants.dart';
 
 class NavigationButton extends StatelessWidget {
   final bool isLeft;
 
   const NavigationButton({Key? key, required this.isLeft}) : super(key: key);
-
-  static const double _buttonSize = 50.0;
 
   void _openSidebarHandler(BuildContext context) {
     isLeft
@@ -15,16 +14,20 @@ class NavigationButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const circularRadius = kDefaultButtonSize / 2.0;
+
     return Container(
+      height: kDefaultButtonSize,
+      width: kDefaultButtonSize,
       decoration: BoxDecoration(
         borderRadius: isLeft
             ? const BorderRadius.only(
-                topRight: Radius.circular(_buttonSize / 2.0),
-                bottomRight: Radius.circular(_buttonSize / 2.0),
+                topRight: Radius.circular(circularRadius),
+                bottomRight: Radius.circular(circularRadius),
               )
             : const BorderRadius.only(
-                topLeft: Radius.circular(_buttonSize / 2.0),
-                bottomLeft: Radius.circular(_buttonSize / 2.0),
+                topLeft: Radius.circular(circularRadius),
+                bottomLeft: Radius.circular(circularRadius),
               ),
         color: Colors.white,
       ),
@@ -34,7 +37,7 @@ class NavigationButton extends StatelessWidget {
           isLeft
               ? Icons.keyboard_arrow_right_outlined
               : Icons.keyboard_arrow_left_outlined,
-          size: _buttonSize,
+          size: kDefaultButtonSize,
           color: Colors.grey,
         ),
       ),

@@ -1,9 +1,11 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:noko_prototype/src/features/map/domain/models/route_destination_model.dart';
 
 class GeolocationState {
   final LatLng? currentPosition;
-  final List<LatLng>? routePolylines;
+  final Set<RouteDestinationModel>? routesPositions;
   final Map<String, LatLng> busStopPositions;
+  final List<LatLng>? currentRoute;
 
   final BitmapDescriptor? myPositionIcon;
   final BitmapDescriptor? busStopIcon;
@@ -13,8 +15,9 @@ class GeolocationState {
 
   const GeolocationState({
     this.currentPosition,
-    this.routePolylines = const [],
+    this.routesPositions = const {},
     this.busStopPositions = const {},
+    this.currentRoute = const [],
     this.myPositionIcon,
     this.busStopIcon,
     this.shuttleIcon,
@@ -22,13 +25,15 @@ class GeolocationState {
       isTrackingEnabled: false,
       isTrafficEnabled: false,
       isRouteEnabled: false,
+      isRouteReversed: false,
     ),
   });
 
   GeolocationState update({
     LatLng? currentPosition,
-    List<LatLng>? routePolylines,
+    Set<RouteDestinationModel>? routesPositions,
     Map<String, LatLng>? busStopPositions,
+    List<LatLng>? currentRoute,
     BitmapDescriptor? myPositionIcon,
     BitmapDescriptor? busStopIcon,
     BitmapDescriptor? shuttleIcon,
@@ -36,8 +41,9 @@ class GeolocationState {
   }) {
     return GeolocationState(
       currentPosition: currentPosition ?? this.currentPosition,
-      routePolylines: routePolylines ?? this.routePolylines,
+      routesPositions: routesPositions ?? this.routesPositions,
       busStopPositions: busStopPositions ?? this.busStopPositions,
+      currentRoute: currentRoute ?? this.currentRoute,
       myPositionIcon: myPositionIcon ?? this.myPositionIcon,
       busStopIcon: busStopIcon ?? this.busStopIcon,
       shuttleIcon: shuttleIcon ?? this.shuttleIcon,
@@ -50,11 +56,13 @@ class MapUtilsState {
   final bool? isTrackingEnabled;
   final bool? isTrafficEnabled;
   final bool? isRouteEnabled;
+  final bool? isRouteReversed;
 
   const MapUtilsState({
     this.isTrackingEnabled,
     this.isTrafficEnabled,
     this.isRouteEnabled,
+    this.isRouteReversed,
   });
 
   MapUtilsState copyWith(MapUtilsState newState) {
@@ -62,6 +70,7 @@ class MapUtilsState {
       isTrackingEnabled: newState.isTrackingEnabled ?? isTrackingEnabled,
       isTrafficEnabled: newState.isTrafficEnabled ?? isTrafficEnabled,
       isRouteEnabled: newState.isRouteEnabled ?? isRouteEnabled,
+      isRouteReversed: newState.isRouteReversed ?? isRouteReversed,
     );
   }
 }

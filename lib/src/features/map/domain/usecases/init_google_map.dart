@@ -8,8 +8,8 @@ import 'package:noko_prototype/src/features/map/domain/bloc/geolocation_bloc.dar
 import 'package:noko_prototype/src/features/map/domain/events/geolocation_events.dart';
 import 'package:noko_prototype/src/features/map/domain/models/geolocation_state.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/update_markers.dart';
-import 'package:noko_prototype/src/features/map/domain/usecases/update_polylines.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/update_position.dart';
+import 'package:noko_prototype/src/features/map/domain/usecases/update_routes.dart';
 import 'package:noko_prototype/src/features/map/domain/utils/map_utils.dart';
 import 'package:noko_prototype/src/features/map/domain/utils/shadow_geolocation_updater.dart';
 
@@ -19,7 +19,7 @@ class InitGoogleMap implements UseCase<Either<Failure, void>, BuildContext> {
   final ShadowGeolocationUpdater geolocationUpdater;
 
   final UpdateMarkers updateMarkersUsecase;
-  final UpdatePolylines updatePolylinesUsecase;
+  final UpdateRoutes updateRoutesUsecase;
   final UpdatePosition updatePositionUsecase;
 
   InitGoogleMap({
@@ -27,7 +27,7 @@ class InitGoogleMap implements UseCase<Either<Failure, void>, BuildContext> {
     required this.mapUtils,
     required this.geolocationUpdater,
     required this.updateMarkersUsecase,
-    required this.updatePolylinesUsecase,
+    required this.updateRoutesUsecase,
     required this.updatePositionUsecase,
   });
 
@@ -39,10 +39,6 @@ class InitGoogleMap implements UseCase<Either<Failure, void>, BuildContext> {
     BitmapDescriptor shuttleIcon = await mapUtils.loadMarkerImageFromAsset(context, 'assets/icons/ic_shuttle_route_white.png');
 
     GeolocationState initialState = geolocationUpdater.initialGeoPosition();
-    List<LatLng> polylineCoordinates = await mapUtils.loadPolylineCoordinates(
-      geolocationUpdater.routeGeopoints().first,
-      geolocationUpdater.routeGeopoints().last,
-    );
 
     bloc.add(GeolocationUpdateIcons(
       myPositionIcon: myPositionIcon,
@@ -51,7 +47,7 @@ class InitGoogleMap implements UseCase<Either<Failure, void>, BuildContext> {
     ));
 
     updateMarkersUsecase(initialState.busStopPositions);
-    updatePolylinesUsecase(polylineCoordinates);
+    updateRoutesUsecase(initialState.routesPositions!);
     updatePositionUsecase(initialState.currentPosition!);
 
     geolocationUpdater.startTracking();

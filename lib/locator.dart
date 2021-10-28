@@ -4,8 +4,9 @@ import 'package:noko_prototype/src/features/map/domain/models/geolocation_state.
 import 'package:noko_prototype/src/features/map/domain/usecases/init_google_map.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/update_map_utils.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/update_markers.dart';
-import 'package:noko_prototype/src/features/map/domain/usecases/update_polylines.dart';
+import 'package:noko_prototype/src/features/map/domain/usecases/update_current_route.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/update_position.dart';
+import 'package:noko_prototype/src/features/map/domain/usecases/update_routes.dart';
 import 'package:noko_prototype/src/features/map/domain/utils/map_utils.dart';
 import 'package:noko_prototype/src/features/map/domain/utils/shadow_geolocation_updater.dart';
 
@@ -23,21 +24,27 @@ void initLocator() {
         mapUtils: locator<MapUtils>(),
         geolocationUpdater: locator<ShadowGeolocationUpdater>(),
         updateMarkersUsecase: locator<UpdateMarkers>(),
-        updatePolylinesUsecase: locator<UpdatePolylines>(),
+        updateRoutesUsecase: locator<UpdateRoutes>(),
         updatePositionUsecase: locator<UpdatePosition>(),
       ));
 
   locator.registerLazySingleton(() => UpdateMarkers(
         bloc: locator<GeolocationBloc>(),
       ));
-  locator.registerLazySingleton(() => UpdatePolylines(
+  locator.registerLazySingleton(() => UpdateRoutes(
         bloc: locator<GeolocationBloc>(),
+      ));
+  locator.registerLazySingleton(() => UpdateCurrentRoute(
+        bloc: locator<GeolocationBloc>(),
+        mapUtils: locator<MapUtils>(),
       ));
   locator.registerLazySingleton(() => UpdatePosition(
         bloc: locator<GeolocationBloc>(),
+        updateRouteUsecase: locator<UpdateCurrentRoute>(),
       ));
   locator.registerLazySingleton(() => UpdateMapUtils(
         bloc: locator<GeolocationBloc>(),
+        updateRouteUsecase: locator<UpdateCurrentRoute>(),
       ));
 
   /// Utils

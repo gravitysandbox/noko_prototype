@@ -3,10 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:noko_prototype/locator.dart';
 import 'package:noko_prototype/src/features/map/domain/bloc/geolocation_bloc.dart';
 import 'package:noko_prototype/src/features/map/domain/models/geolocation_state.dart';
-import 'package:noko_prototype/src/features/map/domain/utils/map_utils.dart';
 
 class GoogleMapFragment extends StatefulWidget {
   const GoogleMapFragment({Key? key}) : super(key: key);
@@ -58,14 +56,20 @@ class _GoogleMapFragmentState extends State<GoogleMapFragment> {
   }
 
   Set<Polyline> _updatePolylines(GeolocationState state) {
-    if (state.routePolylines != null && state.routePolylines!.isNotEmpty) {
-      return locator<MapUtils>().getPolylinesWithCurrentPosition(
-        state.routePolylines!,
-        state.currentPosition!,
-      );
+    final Set<Polyline> polylinesToShow = {};
+
+    if (state.currentRoute != null && state.currentRoute!.isNotEmpty) {
+      polylinesToShow.add(Polyline(
+        polylineId: const PolylineId('Next route'),
+        width: 8,
+        points: state.currentRoute!,
+        startCap: Cap.roundCap,
+        endCap: Cap.roundCap,
+        color: Colors.blue,
+      ));
     }
 
-    return {};
+    return polylinesToShow;
   }
 
   void _onMapCreated(GoogleMapController mapController) {

@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:noko_prototype/src/features/map/domain/models/geolocation_state.dart';
+import 'package:noko_prototype/src/features/map/domain/models/route_destination_model.dart';
 
 abstract class GeolocationEvent extends Equatable {
   const GeolocationEvent([List props = const []]) : super();
@@ -47,12 +48,23 @@ class GeolocationUpdateMarkers extends GeolocationEvent {
   List<Object?> get props => throw UnimplementedError();
 }
 
-class GeolocationUpdatePolylines extends GeolocationEvent {
-  final List<LatLng> polylinesCoordinates;
+class GeolocationUpdateRoutes extends GeolocationEvent {
+  final Set<RouteDestinationModel> routesCoordinates;
 
-  GeolocationUpdatePolylines({
-    required this.polylinesCoordinates,
-  }) : super([polylinesCoordinates]);
+  GeolocationUpdateRoutes({
+    required this.routesCoordinates,
+  }) : super([routesCoordinates]);
+
+  @override
+  List<Object?> get props => throw UnimplementedError();
+}
+
+class GeolocationUpdateCurrentRoute extends GeolocationEvent {
+  final List<LatLng> routeCoordinates;
+
+  GeolocationUpdateCurrentRoute({
+    required this.routeCoordinates,
+  }) : super([routeCoordinates]);
 
   @override
   List<Object?> get props => throw UnimplementedError();

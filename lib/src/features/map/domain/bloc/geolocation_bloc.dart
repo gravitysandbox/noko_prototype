@@ -39,11 +39,20 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
           break;
         }
 
-      case GeolocationUpdatePolylines:
+      case GeolocationUpdateRoutes:
         {
-          var snapshot = event as GeolocationUpdatePolylines;
+          var snapshot = event as GeolocationUpdateRoutes;
           yield state.update(
-            routePolylines: snapshot.polylinesCoordinates,
+            routesPositions: snapshot.routesCoordinates,
+          );
+          break;
+        }
+
+      case GeolocationUpdateCurrentRoute:
+        {
+          var snapshot = event as GeolocationUpdateCurrentRoute;
+          yield state.update(
+            currentRoute: snapshot.routeCoordinates,
           );
           break;
         }

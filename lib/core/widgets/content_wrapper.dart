@@ -1,16 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:noko_prototype/src/constants.dart';
 
 class ContentWrapper extends StatelessWidget {
   final Widget widget;
+  final double verticalPadding;
+  final double horizontalPadding;
 
-  const ContentWrapper({Key? key, required this.widget}) : super(key: key);
-
-  static const double _defaultPadding = 20.0;
+  const ContentWrapper({
+    Key? key,
+    required this.widget,
+    this.verticalPadding = kDefaultPadding,
+    this.horizontalPadding = kDefaultPadding,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(_defaultPadding),
+      padding: EdgeInsets.symmetric(
+        vertical: verticalPadding,
+        horizontal: horizontalPadding,
+      ),
       child: widget,
     );
   }

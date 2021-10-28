@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:noko_prototype/locator.dart';
+import 'package:noko_prototype/src/constants.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/init_google_map.dart';
 import 'package:noko_prototype/src/features/map/presentation/screens/left_sidebar.dart';
 import 'package:noko_prototype/src/features/map/presentation/screens/right_sidebar.dart';
@@ -32,31 +33,36 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     final mq = MediaQuery.of(context).size;
+    final navigationBottomPosition = (mq.height / 2.0) - (kDefaultButtonSize / 2.0);
 
     return SafeArea(
       child: Scaffold(
         drawer: const LeftSidebar(),
         endDrawer: const RightSidebar(),
-        body: Stack(
-          fit: StackFit.expand,
-          children: <Widget>[
-            const GoogleMapFragment(),
-            Positioned(
-              left: 0.0,
-              bottom: (mq.height / 2.0) - 30.0,
-              child: const NavigationButton(isLeft: true),
-            ),
-            Positioned(
-              right: 0.0,
-              bottom: (mq.height / 2.0) - 30.0,
-              child: const NavigationButton(isLeft: false),
-            ),
-            const Positioned(
-              bottom: 20.0,
-              left: 20.0,
-              child: MapUtilsPanel(),
-            ),
-          ],
+        body: Builder(
+          builder: (ctx) {
+            return Stack(
+              fit: StackFit.expand,
+              children: <Widget>[
+                const GoogleMapFragment(),
+                Positioned(
+                  left: 0.0,
+                  bottom: navigationBottomPosition,
+                  child: const NavigationButton(isLeft: true),
+                ),
+                Positioned(
+                  right: 0.0,
+                  bottom: navigationBottomPosition,
+                  child: const NavigationButton(isLeft: false),
+                ),
+                const Positioned(
+                  bottom: kDefaultPadding,
+                  left: kDefaultPadding,
+                  child: MapUtilsPanel(),
+                ),
+              ],
+            );
+          }
         ),
       ),
     );
