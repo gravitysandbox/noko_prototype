@@ -1,13 +1,14 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:noko_prototype/core/utils/logger.dart';
-import 'package:noko_prototype/src/features/map/domain/events/geolocation_events.dart';
-import 'package:noko_prototype/src/features/map/domain/models/geolocation_state.dart';
+import 'package:noko_prototype/src/features/map/domain/bloc/geolocation_events.dart';
+import 'package:noko_prototype/src/features/map/domain/bloc/geolocation_state.dart';
 
-class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
-  GeolocationBloc(GeolocationState initialState) : super(initialState);
+class GeolocationBloc extends Bloc<GeolocationBlocEvent, GeolocationBlocState> {
+  GeolocationBloc(GeolocationBlocState initialState) : super(initialState);
 
   @override
-  Stream<GeolocationState> mapEventToState(GeolocationEvent event) async* {
+  Stream<GeolocationBlocState> mapEventToState(
+      GeolocationBlocEvent event) async* {
     logPrint('***** GeolocationBloc mapEventToState(): ${event.runtimeType}');
     switch (event.runtimeType) {
       case GeolocationUpdateIcons:
@@ -62,6 +63,24 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
           var snapshot = event as GeolocationUpdateMapUtils;
           yield state.update(
             utils: snapshot.utilsState,
+          );
+          break;
+        }
+
+      case GeolocationInitMapThemes:
+        {
+          var snapshot = event as GeolocationInitMapThemes;
+          yield state.update(
+            mapThemes: snapshot.mapThemes,
+          );
+          break;
+        }
+
+      case GeolocationUpdateMapTheme:
+        {
+          var snapshot = event as GeolocationUpdateMapTheme;
+          yield state.update(
+            currentMapTheme: snapshot.mapTheme,
           );
           break;
         }

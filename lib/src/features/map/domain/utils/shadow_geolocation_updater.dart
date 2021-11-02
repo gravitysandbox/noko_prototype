@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:noko_prototype/core/utils/logger.dart';
-import 'package:noko_prototype/src/features/map/domain/models/geolocation_state.dart';
+import 'package:noko_prototype/src/features/map/domain/bloc/geolocation_state.dart';
 import 'package:noko_prototype/src/features/map/domain/models/route_destination_model.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/update_position.dart';
 
@@ -84,8 +84,8 @@ class ShadowGeolocationUpdater {
     );
   }
 
-  GeolocationState initialGeoPosition() {
-    return GeolocationState(
+  GeolocationBlocState initialGeoPosition() {
+    return GeolocationBlocState(
       currentPosition: _yourLocations[0],
       busStopPositions: _busStopLocations,
       routesPositions: _routesLocations,

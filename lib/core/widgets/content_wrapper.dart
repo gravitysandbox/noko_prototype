@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:noko_prototype/src/constants.dart';
+import 'package:noko_prototype/core/constants.dart';
 
 class ContentWrapper extends StatelessWidget {
   final Widget widget;
@@ -9,8 +9,8 @@ class ContentWrapper extends StatelessWidget {
   const ContentWrapper({
     Key? key,
     required this.widget,
-    this.verticalPadding = kDefaultPadding,
-    this.horizontalPadding = kDefaultPadding,
+    this.verticalPadding = Constraints.kDefaultPadding,
+    this.horizontalPadding = Constraints.kDefaultPadding,
   }) : super(key: key);
 
   @override

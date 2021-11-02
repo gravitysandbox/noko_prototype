@@ -1,13 +1,25 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:noko_prototype/core/bloc/app_bloc.dart';
+import 'package:noko_prototype/core/bloc/app_state.dart';
+import 'package:noko_prototype/core/usecases/update_app_theme.dart';
+import 'package:noko_prototype/core/widgets/scrollable_wrapper.dart';
 import 'package:noko_prototype/locator.dart';
-import 'package:noko_prototype/src/constants.dart';
+import 'package:noko_prototype/core/constants.dart';
+import 'package:noko_prototype/src/features/map/domain/bloc/geolocation_bloc.dart';
+import 'package:noko_prototype/src/features/map/domain/bloc/geolocation_state.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/init_google_map.dart';
-import 'package:noko_prototype/src/features/map/presentation/screens/left_sidebar.dart';
-import 'package:noko_prototype/src/features/map/presentation/screens/right_sidebar.dart';
+import 'package:noko_prototype/src/features/map/domain/usecases/update_map_utils.dart';
+import 'package:noko_prototype/src/features/map/presentation/screens/custom_sidebar.dart';
+import 'package:noko_prototype/src/features/map/presentation/widgets/custom_divider.dart';
 import 'package:noko_prototype/src/features/map/presentation/widgets/google_map_fragment.dart';
-import 'package:noko_prototype/src/features/map/presentation/widgets/map_utils_panel.dart';
 import 'package:noko_prototype/src/features/map/presentation/widgets/navigation_button.dart';
+import 'package:noko_prototype/src/features/map/presentation/widgets/route_button.dart';
+import 'package:noko_prototype/src/features/map/presentation/widgets/route_switcher_panel.dart';
+import 'package:noko_prototype/src/features/map/presentation/widgets/setting_category.dart';
+import 'package:noko_prototype/src/features/map/presentation/widgets/category_button.dart';
+import 'package:noko_prototype/src/features/map/presentation/widgets/underlined_text_tile.dart';
 
 class MapScreen extends StatefulWidget {
   static const routeName = '/map';
@@ -33,37 +45,297 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     final mq = MediaQuery.of(context).size;
-    final navigationBottomPosition = (mq.height / 2.0) - (kDefaultButtonSize / 2.0);
+    final navigationBottomPosition =
+        (mq.height / 2.0) - (Constraints.kDefaultButtonSize / 2.0);
 
     return SafeArea(
       child: Scaffold(
-        drawer: const LeftSidebar(),
-        endDrawer: const RightSidebar(),
-        body: Builder(
-          builder: (ctx) {
-            return Stack(
-              fit: StackFit.expand,
-              children: <Widget>[
-                const GoogleMapFragment(),
-                Positioned(
-                  left: 0.0,
-                  bottom: navigationBottomPosition,
-                  child: const NavigationButton(isLeft: true),
-                ),
-                Positioned(
-                  right: 0.0,
-                  bottom: navigationBottomPosition,
-                  child: const NavigationButton(isLeft: false),
-                ),
-                const Positioned(
-                  bottom: kDefaultPadding,
-                  left: kDefaultPadding,
-                  child: MapUtilsPanel(),
-                ),
-              ],
-            );
-          }
+        drawer: const _LeftSidebar(),
+        endDrawer: const _RightSidebar(),
+        body: Stack(
+          fit: StackFit.expand,
+          children: <Widget>[
+            const GoogleMapFragment(),
+            Positioned(
+              left: 0.0,
+              bottom: navigationBottomPosition,
+              child: const NavigationButton(isLeft: true),
+            ),
+            Positioned(
+              right: 0.0,
+              bottom: navigationBottomPosition,
+              child: const NavigationButton(isLeft: false),
+            )
+          ],
         ),
+      ),
+    );
+  }
+}
+
+class _LeftSidebar extends StatelessWidget {
+  const _LeftSidebar({Key? key}) : super(key: key);
+
+  void _onChangeAppThemeHandler(int choice) {
+    if (choice == 0) {
+      locator<UpdateAppTheme>().call(false);
+    }
+
+    if (choice == 1) {
+      locator<UpdateAppTheme>().call(true);
+    }
+  }
+
+  void _onEnableTrafficModeHandler(int choice) {
+    if (choice == 0) {
+      locator<UpdateMapUtils>()
+          .call(const MapUtilsState(isTrafficEnabled: true));
+    }
+
+    if (choice == 1) {
+      locator<UpdateMapUtils>()
+          .call(const MapUtilsState(isTrafficEnabled: false));
+    }
+  }
+
+  void _onEnableRouteModeHandler(int choice) {
+    if (choice == 0) {
+      locator<UpdateMapUtils>().call(const MapUtilsState(isRouteEnabled: true));
+    }
+
+    if (choice == 1) {
+      locator<UpdateMapUtils>()
+          .call(const MapUtilsState(isRouteEnabled: false));
+    }
+  }
+
+  void _onReverseRouteModeHandler(int choice) {
+    if (choice == 0) {
+      locator<UpdateMapUtils>()
+          .call(const MapUtilsState(isRouteReversed: true));
+    }
+
+    if (choice == 1) {
+      locator<UpdateMapUtils>()
+          .call(const MapUtilsState(isRouteReversed: false));
+    }
+  }
+
+  void _onEnableTrackingModeHandler(int choice) {
+    if (choice == 0) {
+      locator<UpdateMapUtils>()
+          .call(const MapUtilsState(isTrackingEnabled: true));
+    }
+
+    if (choice == 1) {
+      locator<UpdateMapUtils>()
+          .call(const MapUtilsState(isTrackingEnabled: false));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomSidebar(
+      widget: LayoutBuilder(
+        builder: (context, constraints) {
+          return ScrollableWrapper(
+            widgets: <Widget>[
+              BlocBuilder<AppBloc, AppBlocState>(
+                buildWhen: (prev, current) {
+                  return prev.isDarkTheme != current.isDarkTheme;
+                },
+                builder: (context, state) {
+                  return Column(
+                    children: <Widget>[
+                      UnderlinedTextTile(
+                        label: 'Route settings',
+                        description: 'Selection of op and routes for control',
+                        callback: () {},
+                        isDark: state.isDarkTheme,
+                      ),
+                      UnderlinedTextTile(
+                        label: 'Route schedule',
+                        description: 'Current route schedule',
+                        callback: () {},
+                        isDark: state.isDarkTheme,
+                      ),
+                      SettingCategory(
+                        label: 'State number type',
+                        switches: const {
+                          'Tax-1',
+                          '1111',
+                          'Disable',
+                        },
+                        callback: (value) {},
+                        activePosition: 0,
+                      ),
+                      const SizedBox(
+                        height: Constraints.kDefaultPadding * 0.75,
+                      ),
+                      SettingCategory(
+                        label: 'Monitoring type',
+                        switches: const {
+                          'Light',
+                          'Dark',
+                        },
+                        callback: _onChangeAppThemeHandler,
+                        activePosition: state.isDarkTheme ? 1 : 0,
+                      ),
+                    ],
+                  );
+                },
+              ),
+              const SizedBox(
+                height: Constraints.kDefaultPadding * 0.75,
+              ),
+              BlocBuilder<GeolocationBloc, GeolocationBlocState>(
+                buildWhen: (prev, current) {
+                  return prev.utils != current.utils;
+                },
+                builder: (context, state) {
+                  return Column(
+                    children: <Widget>[
+                      SettingCategory(
+                        label: 'Traffic display',
+                        switches: const {
+                          'Enable',
+                          'Disable',
+                        },
+                        callback: _onEnableTrafficModeHandler,
+                        activePosition: state.utils.isTrafficEnabled! ? 0 : 1,
+                      ),
+                      const SizedBox(
+                        height: Constraints.kDefaultPadding * 0.75,
+                      ),
+                      SettingCategory(
+                        label: 'Route display',
+                        switches: const {
+                          'Enable',
+                          'Disable',
+                        },
+                        callback: _onEnableRouteModeHandler,
+                        activePosition: state.utils.isRouteEnabled! ? 0 : 1,
+                      ),
+                      const SizedBox(
+                        height: Constraints.kDefaultPadding * 0.75,
+                      ),
+                      SettingCategory(
+                        label: 'Reverse route',
+                        switches: const {
+                          'Enable',
+                          'Disable',
+                        },
+                        callback: _onReverseRouteModeHandler,
+                        activePosition: state.utils.isRouteReversed! ? 0 : 1,
+                        isDisabled: !state.utils.isRouteEnabled!,
+                      ),
+                      const SizedBox(
+                        height: Constraints.kDefaultPadding * 0.75,
+                      ),
+                      SettingCategory(
+                        label: 'Follow the target',
+                        switches: const {
+                          'Enable',
+                          'Disable',
+                        },
+                        callback: _onEnableTrackingModeHandler,
+                        activePosition: state.utils.isTrackingEnabled! ? 0 : 1,
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _RightSidebar extends StatelessWidget {
+  const _RightSidebar({Key? key}) : super(key: key);
+
+  static const Map<String, bool> _routes = {
+    'M 16, Gomel MT': true,
+    'A 126, Gomel AP': true,
+    'M 17, Gomel MT': true,
+    'T 10, Gomel': false,
+    'M 12, Gomel': false,
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomSidebar(
+      widget: BlocBuilder<AppBloc, AppBlocState>(
+        builder: (context, state) {
+          return Column(
+            children: <Widget>[
+              CategoryButton(
+                label: 'My position',
+                icon: Icons.api,
+                color: Colors.blue,
+                callback: () {},
+              ),
+              CustomDivider(
+                color: state.isDarkTheme
+                    ? Constraints.kLightColor()
+                    : Constraints.kDarkColor(),
+              ),
+              CategoryButton(
+                label: 'Add routes',
+                icon: Icons.add_to_photos,
+                callback: () {},
+                color: state.isDarkTheme
+                    ? Constraints.kLightColor()
+                    : Constraints.kDefaultButtonColor,
+              ),
+              CustomDivider(
+                color: state.isDarkTheme
+                    ? Constraints.kLightColor()
+                    : Constraints.kDarkColor(),
+              ),
+              const RouteSwitcherPanel(),
+              CustomDivider(
+                color: state.isDarkTheme
+                    ? Constraints.kLightColor()
+                    : Constraints.kDarkColor(),
+              ),
+              Container(
+                height: Constraints.kDefaultButtonSize,
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                    vertical: Constraints.kDefaultButtonSize * 0.15),
+                child: const Align(
+                  alignment: Alignment.bottomLeft,
+                  child: Text(
+                    'Tracked routes',
+                    style: TextStyle(fontSize: 16.0),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: ListView.separated(
+                  itemCount: _routes.length,
+                  physics: const BouncingScrollPhysics(),
+                  separatorBuilder: (context, index) {
+                    return const SizedBox(
+                      height: Constraints.kDefaultPadding,
+                    );
+                  },
+                  itemBuilder: (context, index) {
+                    return RouteButton(
+                      label: _routes.keys.toList()[index],
+                      callback: () {},
+                      isActive: _routes.values.toList()[index],
+                      isDark: state.isDarkTheme,
+                    );
+                  },
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

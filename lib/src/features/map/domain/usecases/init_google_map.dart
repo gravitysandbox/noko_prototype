@@ -1,12 +1,13 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:noko_prototype/core/models/failure.dart';
 import 'package:noko_prototype/core/models/usecase.dart';
 import 'package:noko_prototype/core/utils/logger.dart';
 import 'package:noko_prototype/src/features/map/domain/bloc/geolocation_bloc.dart';
-import 'package:noko_prototype/src/features/map/domain/events/geolocation_events.dart';
-import 'package:noko_prototype/src/features/map/domain/models/geolocation_state.dart';
+import 'package:noko_prototype/src/features/map/domain/bloc/geolocation_events.dart';
+import 'package:noko_prototype/src/features/map/domain/bloc/geolocation_state.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/update_markers.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/update_position.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/update_routes.dart';
@@ -22,7 +23,7 @@ class InitGoogleMap implements UseCase<Either<Failure, void>, BuildContext> {
   final UpdateRoutes updateRoutesUsecase;
   final UpdatePosition updatePositionUsecase;
 
-  InitGoogleMap({
+  const InitGoogleMap({
     required this.bloc,
     required this.mapUtils,
     required this.geolocationUpdater,
@@ -34,22 +35,37 @@ class InitGoogleMap implements UseCase<Either<Failure, void>, BuildContext> {
   @override
   Future<Either<Failure, bool>> call(BuildContext context) async {
     logPrint('***** InitGoogleMap call()');
-    BitmapDescriptor myPositionIcon = await mapUtils.loadMarkerImageFromAsset(context, 'assets/icons/ic_my_transport.png');
-    BitmapDescriptor busStopIcon = await mapUtils.loadMarkerImageFromAsset(context, 'assets/icons/ic_bus_stop.png');
-    BitmapDescriptor shuttleIcon = await mapUtils.loadMarkerImageFromAsset(context, 'assets/icons/ic_shuttle_route_white.png');
+    BitmapDescriptor myPositionIcon = await mapUtils.loadMarkerImageFromAsset(
+        context, 'assets/icons/ic_my_transport.png');
+    BitmapDescriptor busStopIcon = await mapUtils.loadMarkerImageFromAsset(
+        context, 'assets/icons/ic_bus_stop.png');
+    BitmapDescriptor shuttleIcon = await mapUtils.loadMarkerImageFromAsset(
+        context, 'assets/icons/ic_shuttle_route_white.png');
 
-    GeolocationState initialState = geolocationUpdater.initialGeoPosition();
-
+    /// Set icons
     bloc.add(GeolocationUpdateIcons(
       myPositionIcon: myPositionIcon,
       busStopIcon: busStopIcon,
       shuttleIcon: shuttleIcon,
     ));
 
+    /// Set map themes
+    String lightMapTheme =
+        await rootBundle.loadString('assets/map_styles/light.json');
+    String darkMapTheme =
+        await rootBundle.loadString('assets/map_styles/dark.json');
+    bloc.add(GeolocationInitMapThemes(mapThemes: {
+      MapThemeStyle.light: lightMapTheme,
+      MapThemeStyle.dark: darkMapTheme,
+    }));
+
+    /// Set markers & routes & current position
+    GeolocationBlocState initialState = geolocationUpdater.initialGeoPosition();
     updateMarkersUsecase(initialState.busStopPositions);
     updateRoutesUsecase(initialState.routesPositions!);
     updatePositionUsecase(initialState.currentPosition!);
 
+    /// Start geolocation mock service
     geolocationUpdater.startTracking();
 
     return const Right(true);

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:noko_prototype/src/constants.dart';
+import 'package:noko_prototype/core/constants.dart';
 
 class RouteSwitcherPanel extends StatelessWidget {
   const RouteSwitcherPanel({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    const imageSize = kDefaultButtonSize * 0.9;
+    const imageSize = Constraints.kDefaultButtonSize * 0.9;
 
     return Container(
-      height: kDefaultButtonSize,
-      padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding / 2.0),
+      height: Constraints.kDefaultButtonSize,
+      padding: const EdgeInsets.symmetric(horizontal: Constraints.kDefaultPadding / 2.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[

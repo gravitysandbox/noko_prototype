@@ -1,7 +1,12 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:noko_prototype/src/features/map/domain/models/route_destination_model.dart';
 
-class GeolocationState {
+enum MapThemeStyle {
+  light,
+  dark,
+}
+
+class GeolocationBlocState {
   final LatLng? currentPosition;
   final Set<RouteDestinationModel>? routesPositions;
   final Map<String, LatLng> busStopPositions;
@@ -12,24 +17,37 @@ class GeolocationState {
   final BitmapDescriptor? shuttleIcon;
 
   final MapUtilsState utils;
+  final Map<MapThemeStyle, String>? mapThemes;
+  final MapThemeStyle currentMapTheme;
 
-  const GeolocationState({
+  const GeolocationBlocState({
     this.currentPosition,
-    this.routesPositions = const {},
-    this.busStopPositions = const {},
+    required this.routesPositions,
+    required this.busStopPositions,
     this.currentRoute = const [],
     this.myPositionIcon,
     this.busStopIcon,
     this.shuttleIcon,
-    this.utils = const MapUtilsState(
-      isTrackingEnabled: false,
-      isTrafficEnabled: false,
-      isRouteEnabled: false,
-      isRouteReversed: false,
-    ),
+    this.utils = const MapUtilsState(),
+    this.mapThemes = const {},
+    this.currentMapTheme = MapThemeStyle.light,
   });
 
-  GeolocationState update({
+  factory GeolocationBlocState.initial() {
+    return const GeolocationBlocState(
+      routesPositions: {},
+      busStopPositions: {},
+      utils: MapUtilsState(
+        isTrackingEnabled: false,
+        isTrafficEnabled: false,
+        isRouteEnabled: false,
+        isRouteReversed: false,
+      ),
+      currentMapTheme: MapThemeStyle.light,
+    );
+  }
+
+  GeolocationBlocState update({
     LatLng? currentPosition,
     Set<RouteDestinationModel>? routesPositions,
     Map<String, LatLng>? busStopPositions,
@@ -38,8 +56,10 @@ class GeolocationState {
     BitmapDescriptor? busStopIcon,
     BitmapDescriptor? shuttleIcon,
     MapUtilsState? utils,
+    Map<MapThemeStyle, String>? mapThemes,
+    MapThemeStyle? currentMapTheme,
   }) {
-    return GeolocationState(
+    return GeolocationBlocState(
       currentPosition: currentPosition ?? this.currentPosition,
       routesPositions: routesPositions ?? this.routesPositions,
       busStopPositions: busStopPositions ?? this.busStopPositions,
@@ -48,6 +68,8 @@ class GeolocationState {
       busStopIcon: busStopIcon ?? this.busStopIcon,
       shuttleIcon: shuttleIcon ?? this.shuttleIcon,
       utils: utils != null ? this.utils.copyWith(utils) : this.utils,
+      mapThemes: mapThemes ?? this.mapThemes,
+      currentMapTheme: currentMapTheme ?? this.currentMapTheme,
     );
   }
 }

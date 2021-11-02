@@ -1,28 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:noko_prototype/src/constants.dart';
+import 'package:noko_prototype/core/constants.dart';
 
-class TileButton extends StatelessWidget {
+class CategoryButton extends StatelessWidget {
   final String label;
   final IconData icon;
   final Color color;
   final VoidCallback callback;
 
-  const TileButton({
+  const CategoryButton({
     Key? key,
     required this.label,
     required this.icon,
-    this.color = kDefaultTextColor,
+    this.color = Constraints.kDefaultButtonColor,
     required this.callback,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    const iconSize = kDefaultButtonSize * 0.5;
+    const iconSize = Constraints.kDefaultButtonSize * 0.5;
 
     return GestureDetector(
       onTap: callback,
       child: SizedBox(
-        height: kDefaultButtonSize,
+        height: Constraints.kDefaultButtonSize,
         child: Row(
           children: <Widget>[
             SizedBox(
@@ -36,7 +36,7 @@ class TileButton extends StatelessWidget {
               ),
             ),
             const SizedBox(
-              width: kDefaultPadding,
+              width: Constraints.kDefaultPadding,
             ),
             Text(
               label,

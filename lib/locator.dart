@@ -1,7 +1,11 @@
 import 'package:get_it/get_it.dart';
+import 'package:noko_prototype/core/bloc/app_bloc.dart';
+import 'package:noko_prototype/core/bloc/app_state.dart';
+import 'package:noko_prototype/core/usecases/update_app_theme.dart';
 import 'package:noko_prototype/src/features/map/domain/bloc/geolocation_bloc.dart';
-import 'package:noko_prototype/src/features/map/domain/models/geolocation_state.dart';
+import 'package:noko_prototype/src/features/map/domain/bloc/geolocation_state.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/init_google_map.dart';
+import 'package:noko_prototype/src/features/map/domain/usecases/update_map_theme.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/update_map_utils.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/update_markers.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/update_current_route.dart';
@@ -13,10 +17,33 @@ import 'package:noko_prototype/src/features/map/domain/utils/shadow_geolocation_
 GetIt locator = GetIt.instance;
 
 void initLocator() {
+  _initCore();
+  _initGoogleMap();
+}
+
+void _initCore() {
+  /// Blocs
+  locator.registerLazySingleton(() => AppBloc(
+        AppBlocState.initial(),
+      ));
+
+  locator.registerLazySingleton(() => UpdateAppTheme(
+        appBloc: locator<AppBloc>(),
+        updateMapTheme: locator<UpdateMapTheme>(),
+      ));
+}
+
+void _initGoogleMap() {
   /// Blocs
   locator.registerLazySingleton(() => GeolocationBloc(
-        const GeolocationState(),
+        GeolocationBlocState.initial(),
       ));
+
+  /// Utils
+  locator.registerLazySingleton(() => ShadowGeolocationUpdater(
+        updatePositionUsecase: locator<UpdatePosition>(),
+      ));
+  locator.registerLazySingleton(() => MapUtils());
 
   /// Usecases
   locator.registerLazySingleton(() => InitGoogleMap(
@@ -27,7 +54,6 @@ void initLocator() {
         updateRoutesUsecase: locator<UpdateRoutes>(),
         updatePositionUsecase: locator<UpdatePosition>(),
       ));
-
   locator.registerLazySingleton(() => UpdateMarkers(
         bloc: locator<GeolocationBloc>(),
       ));
@@ -46,10 +72,7 @@ void initLocator() {
         bloc: locator<GeolocationBloc>(),
         updateRouteUsecase: locator<UpdateCurrentRoute>(),
       ));
-
-  /// Utils
-  locator.registerLazySingleton(() => ShadowGeolocationUpdater(
-        updatePositionUsecase: locator<UpdatePosition>(),
+  locator.registerLazySingleton(() => UpdateMapTheme(
+        bloc: locator<GeolocationBloc>(),
       ));
-  locator.registerLazySingleton(() => MapUtils());
 }

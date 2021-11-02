@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:noko_prototype/src/features/map/domain/bloc/geolocation_bloc.dart';
-import 'package:noko_prototype/src/features/map/domain/models/geolocation_state.dart';
+import 'package:noko_prototype/src/features/map/domain/bloc/geolocation_state.dart';
 
 class GoogleMapFragment extends StatefulWidget {
   const GoogleMapFragment({Key? key}) : super(key: key);
@@ -23,7 +23,7 @@ class _GoogleMapFragmentState extends State<GoogleMapFragment> {
 
   final Completer<GoogleMapController> _mapController = Completer();
 
-  Set<Marker> _updateMarkers(GeolocationState state) {
+  Set<Marker> _updateMarkers(GeolocationBlocState state) {
     final Set<Marker> markersToShow = {};
 
     if (state.busStopPositions.isNotEmpty) {
@@ -55,25 +55,40 @@ class _GoogleMapFragmentState extends State<GoogleMapFragment> {
     return markersToShow;
   }
 
-  Set<Polyline> _updatePolylines(GeolocationState state) {
+  Set<Polyline> _updatePolylines(GeolocationBlocState state) {
     final Set<Polyline> polylinesToShow = {};
 
     if (state.currentRoute != null && state.currentRoute!.isNotEmpty) {
       polylinesToShow.add(Polyline(
-        polylineId: const PolylineId('Next route'),
-        width: 8,
+        polylineId: const PolylineId('You route'),
+        width: 6,
         points: state.currentRoute!,
         startCap: Cap.roundCap,
         endCap: Cap.roundCap,
-        color: Colors.blue,
+        color: state.currentMapTheme == MapThemeStyle.light
+            ? Colors.blue
+            : Colors.deepOrange,
       ));
     }
 
     return polylinesToShow;
   }
 
-  void _onMapCreated(GoogleMapController mapController) {
+  void _onMapCreated(
+    GoogleMapController mapController,
+    GeolocationBlocState state,
+  ) {
     _mapController.complete(mapController);
+    _updateMapTheme(state);
+  }
+
+  void _updateMapTheme(GeolocationBlocState state) {
+    if (state.mapThemes == null) return;
+    _mapController.future.then((controller) {
+      controller.setMapStyle(state.currentMapTheme == MapThemeStyle.dark
+          ? state.mapThemes![MapThemeStyle.dark]
+          : state.mapThemes![MapThemeStyle.light]);
+    });
   }
 
   void _animateCamera(LatLng coordinates) {
@@ -86,7 +101,13 @@ class _GoogleMapFragmentState extends State<GoogleMapFragment> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<GeolocationBloc, GeolocationState>(
+    return BlocConsumer<GeolocationBloc, GeolocationBlocState>(
+      listener: (context, state) {
+        _updateMapTheme(state);
+      },
+      listenWhen: (prev, current) {
+        return prev.currentMapTheme != current.currentMapTheme;
+      },
       builder: (context, state) {
         return GoogleMap(
           mapType: MapType.normal,
@@ -97,7 +118,7 @@ class _GoogleMapFragmentState extends State<GoogleMapFragment> {
           zoomControlsEnabled: true,
           trafficEnabled: state.utils.isTrafficEnabled ?? false,
           initialCameraPosition: _defaultCameraPosition,
-          onMapCreated: _onMapCreated,
+          onMapCreated: (controller) => _onMapCreated(controller, state),
           markers: _updateMarkers(state),
           polylines: (state.utils.isRouteEnabled ?? false)
               ? _updatePolylines(state)

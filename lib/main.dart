@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:noko_prototype/core/bloc/app_bloc.dart';
+import 'package:noko_prototype/core/bloc/app_state.dart';
+import 'package:noko_prototype/core/constants.dart';
 import 'package:noko_prototype/locator.dart';
-import 'package:noko_prototype/src/constants.dart';
 import 'package:noko_prototype/src/features/map/domain/bloc/geolocation_bloc.dart';
 import 'package:noko_prototype/src/features/map/presentation/screens/map_screen.dart';
 
@@ -24,21 +26,25 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(
+          value: locator<AppBloc>(),
+        ),
+        BlocProvider.value(
           value: locator<GeolocationBloc>(),
         ),
       ],
-      child: MaterialApp(
-        theme: ThemeData(
-          textTheme: const TextTheme(
-            bodyText2: TextStyle(
-              fontSize: 20.0,
-              fontWeight: FontWeight.w500,
-              color: kDefaultTextColor,
-            ),
-          ),
-        ),
-        debugShowCheckedModeBanner: false,
-        home: const PageSwitcher(),
+      child: BlocBuilder<AppBloc, AppBlocState>(
+        buildWhen: (prev, current) {
+          return prev.isDarkTheme != current.isDarkTheme;
+        },
+        builder: (context, state) {
+          return MaterialApp(
+            theme: state.isDarkTheme
+                ? Constraints.kDarkTheme
+                : Constraints.kLightTheme,
+            debugShowCheckedModeBanner: false,
+            home: const PageSwitcher(),
+          );
+        },
       ),
     );
   }
@@ -65,4 +71,3 @@ class _PageSwitcherState extends State<PageSwitcher> {
     );
   }
 }
-
