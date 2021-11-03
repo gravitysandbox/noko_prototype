@@ -17,14 +17,14 @@ class RouteButton extends StatelessWidget {
   static const busActiveColor = Colors.lightGreen;
   static const shuttleActiveColor = Color(0xFFF3CC30);
   static const trolleyActiveColor = Colors.pinkAccent;
-  static const disableColor = Constraints.kDefaultButtonColor;
+  static const disableColor = StyleConstants.kDefaultButtonColor;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: callback,
       child: Container(
-        height: Constraints.kDefaultButtonSize * 0.9,
+        height: StyleConstants.kDefaultButtonSize * 0.9,
         decoration: BoxDecoration(
           color: isActive ? busActiveColor : null,
           border: Border.all(
@@ -32,7 +32,7 @@ class RouteButton extends StatelessWidget {
             width: 2.0,
           ),
           borderRadius: const BorderRadius.all(
-              Radius.circular(Constraints.kDefaultButtonSize * 0.2)),
+              Radius.circular(StyleConstants.kDefaultButtonSize * 0.2)),
         ),
         child: Align(
           alignment: Alignment.center,

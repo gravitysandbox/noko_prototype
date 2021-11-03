@@ -14,7 +14,7 @@ class MapUtils {
 
     final imageConfiguration = createLocalImageConfiguration(
       context,
-      size: const Size.square(20.0),
+      size: const Size.square(15.0),
     );
 
     return await BitmapDescriptor.fromAssetImage(

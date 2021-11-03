@@ -2,17 +2,18 @@ import 'package:get_it/get_it.dart';
 import 'package:noko_prototype/core/bloc/app_bloc.dart';
 import 'package:noko_prototype/core/bloc/app_state.dart';
 import 'package:noko_prototype/core/usecases/update_app_theme.dart';
-import 'package:noko_prototype/src/features/map/domain/bloc/geolocation_bloc.dart';
-import 'package:noko_prototype/src/features/map/domain/bloc/geolocation_state.dart';
+import 'package:noko_prototype/src/features/map/domain/bloc/geo_bloc.dart';
+import 'package:noko_prototype/src/features/map/domain/bloc/geo_state.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/init_google_map.dart';
+import 'package:noko_prototype/src/features/map/domain/usecases/update_another_positions.dart';
+import 'package:noko_prototype/src/features/map/domain/usecases/update_current_destination.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/update_map_theme.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/update_map_utils.dart';
-import 'package:noko_prototype/src/features/map/domain/usecases/update_markers.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/update_current_route.dart';
-import 'package:noko_prototype/src/features/map/domain/usecases/update_position.dart';
-import 'package:noko_prototype/src/features/map/domain/usecases/update_routes.dart';
+import 'package:noko_prototype/src/features/map/domain/usecases/update_current_position.dart';
+import 'package:noko_prototype/src/features/map/domain/usecases/update_another_destinations.dart';
 import 'package:noko_prototype/src/features/map/domain/utils/map_utils.dart';
-import 'package:noko_prototype/src/features/map/domain/utils/shadow_geolocation_updater.dart';
+import 'package:noko_prototype/src/features/map/domain/utils/mock_geo_service.dart';
 
 GetIt locator = GetIt.instance;
 
@@ -35,44 +36,52 @@ void _initCore() {
 
 void _initGoogleMap() {
   /// Blocs
-  locator.registerLazySingleton(() => GeolocationBloc(
-        GeolocationBlocState.initial(),
+  locator.registerLazySingleton(() => GeoBloc(
+        GeoBlocState.initial(),
       ));
 
   /// Utils
-  locator.registerLazySingleton(() => ShadowGeolocationUpdater(
-        updatePositionUsecase: locator<UpdatePosition>(),
+  locator.registerLazySingleton(() => MockGeoService(
+        updateCurrentPosition: locator<UpdateCurrentPosition>(),
+        updateAnotherPositions: locator<UpdateAnotherPositions>(),
       ));
   locator.registerLazySingleton(() => MapUtils());
 
   /// Usecases
   locator.registerLazySingleton(() => InitGoogleMap(
-        bloc: locator<GeolocationBloc>(),
+        bloc: locator<GeoBloc>(),
         mapUtils: locator<MapUtils>(),
-        geolocationUpdater: locator<ShadowGeolocationUpdater>(),
-        updateMarkersUsecase: locator<UpdateMarkers>(),
-        updateRoutesUsecase: locator<UpdateRoutes>(),
-        updatePositionUsecase: locator<UpdatePosition>(),
+        mockGeoService: locator<MockGeoService>(),
+        updateCurrentPosition: locator<UpdateCurrentPosition>(),
+        updateCurrentDestination: locator<UpdateCurrentDestination>(),
+        updateAnotherPositions: locator<UpdateAnotherPositions>(),
+        updateAnotherDestinations: locator<UpdateAnotherDestinations>(),
       ));
-  locator.registerLazySingleton(() => UpdateMarkers(
-        bloc: locator<GeolocationBloc>(),
-      ));
-  locator.registerLazySingleton(() => UpdateRoutes(
-        bloc: locator<GeolocationBloc>(),
-      ));
-  locator.registerLazySingleton(() => UpdateCurrentRoute(
-        bloc: locator<GeolocationBloc>(),
-        mapUtils: locator<MapUtils>(),
-      ));
-  locator.registerLazySingleton(() => UpdatePosition(
-        bloc: locator<GeolocationBloc>(),
+
+  locator.registerLazySingleton(() => UpdateCurrentPosition(
+        bloc: locator<GeoBloc>(),
         updateRouteUsecase: locator<UpdateCurrentRoute>(),
       ));
+  locator.registerLazySingleton(() => UpdateCurrentDestination(
+        bloc: locator<GeoBloc>(),
+      ));
+  locator.registerLazySingleton(() => UpdateCurrentRoute(
+        bloc: locator<GeoBloc>(),
+        mapUtils: locator<MapUtils>(),
+      ));
+
+  locator.registerLazySingleton(() => UpdateAnotherPositions(
+        bloc: locator<GeoBloc>(),
+      ));
+  locator.registerLazySingleton(() => UpdateAnotherDestinations(
+        bloc: locator<GeoBloc>(),
+      ));
+
   locator.registerLazySingleton(() => UpdateMapUtils(
-        bloc: locator<GeolocationBloc>(),
+        bloc: locator<GeoBloc>(),
         updateRouteUsecase: locator<UpdateCurrentRoute>(),
       ));
   locator.registerLazySingleton(() => UpdateMapTheme(
-        bloc: locator<GeolocationBloc>(),
+        bloc: locator<GeoBloc>(),
       ));
 }

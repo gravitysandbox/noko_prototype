@@ -5,7 +5,7 @@ import 'package:noko_prototype/core/bloc/app_bloc.dart';
 import 'package:noko_prototype/core/bloc/app_state.dart';
 import 'package:noko_prototype/core/constants.dart';
 import 'package:noko_prototype/locator.dart';
-import 'package:noko_prototype/src/features/map/domain/bloc/geolocation_bloc.dart';
+import 'package:noko_prototype/src/features/map/domain/bloc/geo_bloc.dart';
 import 'package:noko_prototype/src/features/map/presentation/screens/map_screen.dart';
 
 void main() {
@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
           value: locator<AppBloc>(),
         ),
         BlocProvider.value(
-          value: locator<GeolocationBloc>(),
+          value: locator<GeoBloc>(),
         ),
       ],
       child: BlocBuilder<AppBloc, AppBlocState>(
@@ -39,8 +39,8 @@ class MyApp extends StatelessWidget {
         builder: (context, state) {
           return MaterialApp(
             theme: state.isDarkTheme
-                ? Constraints.kDarkTheme
-                : Constraints.kLightTheme,
+                ? StyleConstants.kDarkTheme
+                : StyleConstants.kLightTheme,
             debugShowCheckedModeBanner: false,
             home: const PageSwitcher(),
           );

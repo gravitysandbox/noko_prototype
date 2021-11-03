@@ -4,10 +4,12 @@ class RouteDestinationModel {
   final String routeName;
   final LatLng startPosition;
   final LatLng destinationPosition;
+  final Map<String, LatLng> busStopPositions;
 
   const RouteDestinationModel({
     required this.routeName,
     required this.startPosition,
     required this.destinationPosition,
+    required this.busStopPositions,
   });
 }

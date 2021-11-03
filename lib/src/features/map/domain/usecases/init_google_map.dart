@@ -5,31 +5,34 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:noko_prototype/core/models/failure.dart';
 import 'package:noko_prototype/core/models/usecase.dart';
 import 'package:noko_prototype/core/utils/logger.dart';
-import 'package:noko_prototype/src/features/map/domain/bloc/geolocation_bloc.dart';
-import 'package:noko_prototype/src/features/map/domain/bloc/geolocation_events.dart';
-import 'package:noko_prototype/src/features/map/domain/bloc/geolocation_state.dart';
-import 'package:noko_prototype/src/features/map/domain/usecases/update_markers.dart';
-import 'package:noko_prototype/src/features/map/domain/usecases/update_position.dart';
-import 'package:noko_prototype/src/features/map/domain/usecases/update_routes.dart';
+import 'package:noko_prototype/src/features/map/domain/bloc/geo_bloc.dart';
+import 'package:noko_prototype/src/features/map/domain/bloc/geo_events.dart';
+import 'package:noko_prototype/src/features/map/domain/bloc/geo_state.dart';
+import 'package:noko_prototype/src/features/map/domain/usecases/update_another_positions.dart';
+import 'package:noko_prototype/src/features/map/domain/usecases/update_current_destination.dart';
+import 'package:noko_prototype/src/features/map/domain/usecases/update_current_position.dart';
+import 'package:noko_prototype/src/features/map/domain/usecases/update_another_destinations.dart';
 import 'package:noko_prototype/src/features/map/domain/utils/map_utils.dart';
-import 'package:noko_prototype/src/features/map/domain/utils/shadow_geolocation_updater.dart';
+import 'package:noko_prototype/src/features/map/domain/utils/mock_geo_service.dart';
 
 class InitGoogleMap implements UseCase<Either<Failure, void>, BuildContext> {
-  final GeolocationBloc bloc;
+  final GeoBloc bloc;
   final MapUtils mapUtils;
-  final ShadowGeolocationUpdater geolocationUpdater;
+  final MockGeoService mockGeoService;
 
-  final UpdateMarkers updateMarkersUsecase;
-  final UpdateRoutes updateRoutesUsecase;
-  final UpdatePosition updatePositionUsecase;
+  final UpdateCurrentPosition updateCurrentPosition;
+  final UpdateCurrentDestination updateCurrentDestination;
+  final UpdateAnotherPositions updateAnotherPositions;
+  final UpdateAnotherDestinations updateAnotherDestinations;
 
   const InitGoogleMap({
     required this.bloc,
     required this.mapUtils,
-    required this.geolocationUpdater,
-    required this.updateMarkersUsecase,
-    required this.updateRoutesUsecase,
-    required this.updatePositionUsecase,
+    required this.mockGeoService,
+    required this.updateCurrentPosition,
+    required this.updateCurrentDestination,
+    required this.updateAnotherPositions,
+    required this.updateAnotherDestinations,
   });
 
   @override
@@ -43,7 +46,7 @@ class InitGoogleMap implements UseCase<Either<Failure, void>, BuildContext> {
         context, 'assets/icons/ic_shuttle_route_white.png');
 
     /// Set icons
-    bloc.add(GeolocationUpdateIcons(
+    bloc.add(GeoUpdateIcons(
       myPositionIcon: myPositionIcon,
       busStopIcon: busStopIcon,
       shuttleIcon: shuttleIcon,
@@ -54,19 +57,21 @@ class InitGoogleMap implements UseCase<Either<Failure, void>, BuildContext> {
         await rootBundle.loadString('assets/map_styles/light.json');
     String darkMapTheme =
         await rootBundle.loadString('assets/map_styles/dark.json');
-    bloc.add(GeolocationInitMapThemes(mapThemes: {
+    bloc.add(GeoInitMapThemes(mapThemes: {
       MapThemeStyle.light: lightMapTheme,
       MapThemeStyle.dark: darkMapTheme,
     }));
 
-    /// Set markers & routes & current position
-    GeolocationBlocState initialState = geolocationUpdater.initialGeoPosition();
-    updateMarkersUsecase(initialState.busStopPositions);
-    updateRoutesUsecase(initialState.routesPositions!);
-    updatePositionUsecase(initialState.currentPosition!);
+    /// Set current & another positions and destination points
+    GeoBlocState initialState = mockGeoService.initialGeoData();
+    updateCurrentPosition(initialState.currentPosition!);
+    updateCurrentDestination(initialState.currentDestination!);
+
+    updateAnotherPositions(initialState.anotherPositions!);
+    updateAnotherDestinations(initialState.anotherDestinations!);
 
     /// Start geolocation mock service
-    geolocationUpdater.startTracking();
+    mockGeoService.startTracking();
 
     return const Right(true);
   }

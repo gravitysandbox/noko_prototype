@@ -1,16 +1,19 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:noko_prototype/src/features/map/domain/models/route_destination_model.dart';
+import 'package:noko_prototype/src/features/map/domain/models/route_position_model.dart';
 
 enum MapThemeStyle {
   light,
   dark,
 }
 
-class GeolocationBlocState {
-  final LatLng? currentPosition;
-  final Set<RouteDestinationModel>? routesPositions;
-  final Map<String, LatLng> busStopPositions;
+class GeoBlocState {
+  final RoutePositionModel? currentPosition;
+  final RouteDestinationModel? currentDestination;
   final List<LatLng>? currentRoute;
+
+  final List<RoutePositionModel>? anotherPositions;
+  final Set<RouteDestinationModel>? anotherDestinations;
 
   final BitmapDescriptor? myPositionIcon;
   final BitmapDescriptor? busStopIcon;
@@ -20,11 +23,12 @@ class GeolocationBlocState {
   final Map<MapThemeStyle, String>? mapThemes;
   final MapThemeStyle currentMapTheme;
 
-  const GeolocationBlocState({
+  const GeoBlocState({
     this.currentPosition,
-    required this.routesPositions,
-    required this.busStopPositions,
+    this.currentDestination,
     this.currentRoute = const [],
+    this.anotherPositions = const [],
+    this.anotherDestinations = const {},
     this.myPositionIcon,
     this.busStopIcon,
     this.shuttleIcon,
@@ -33,10 +37,8 @@ class GeolocationBlocState {
     this.currentMapTheme = MapThemeStyle.light,
   });
 
-  factory GeolocationBlocState.initial() {
-    return const GeolocationBlocState(
-      routesPositions: {},
-      busStopPositions: {},
+  factory GeoBlocState.initial() {
+    return const GeoBlocState(
       utils: MapUtilsState(
         isTrackingEnabled: false,
         isTrafficEnabled: false,
@@ -47,11 +49,12 @@ class GeolocationBlocState {
     );
   }
 
-  GeolocationBlocState update({
-    LatLng? currentPosition,
-    Set<RouteDestinationModel>? routesPositions,
-    Map<String, LatLng>? busStopPositions,
+  GeoBlocState copyWith({
+    RoutePositionModel? currentPosition,
+    RouteDestinationModel? currentDestination,
     List<LatLng>? currentRoute,
+    List<RoutePositionModel>? anotherPositions,
+    Set<RouteDestinationModel>? anotherDestinations,
     BitmapDescriptor? myPositionIcon,
     BitmapDescriptor? busStopIcon,
     BitmapDescriptor? shuttleIcon,
@@ -59,11 +62,12 @@ class GeolocationBlocState {
     Map<MapThemeStyle, String>? mapThemes,
     MapThemeStyle? currentMapTheme,
   }) {
-    return GeolocationBlocState(
+    return GeoBlocState(
       currentPosition: currentPosition ?? this.currentPosition,
-      routesPositions: routesPositions ?? this.routesPositions,
-      busStopPositions: busStopPositions ?? this.busStopPositions,
+      currentDestination: currentDestination ?? this.currentDestination,
       currentRoute: currentRoute ?? this.currentRoute,
+      anotherPositions: anotherPositions ?? this.anotherPositions,
+      anotherDestinations: anotherDestinations ?? this.anotherDestinations,
       myPositionIcon: myPositionIcon ?? this.myPositionIcon,
       busStopIcon: busStopIcon ?? this.busStopIcon,
       shuttleIcon: shuttleIcon ?? this.shuttleIcon,

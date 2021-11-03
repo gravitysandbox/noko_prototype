@@ -23,8 +23,8 @@ class CustomSidebar extends StatelessWidget {
         return Theme(
           data: Theme.of(context).copyWith(
             canvasColor: state.isDarkTheme
-                ? Constraints.kDarkColor()
-                : Constraints.kLightColor(),
+                ? StyleConstants.kDarkColor()
+                : StyleConstants.kLightColor(),
           ),
           child: Drawer(
             child: ContentWrapper(

@@ -29,13 +29,13 @@ class UnderlinedTextTile extends StatelessWidget {
         ),
         Text(description),
         const SizedBox(
-          height: Constraints.kDefaultPadding * 0.5,
+          height: StyleConstants.kDefaultPadding * 0.5,
         ),
         CustomDivider(
-          color: isDark ? Constraints.kLightColor() : Constraints.kDarkColor(),
+          color: isDark ? StyleConstants.kLightColor() : StyleConstants.kDarkColor(),
         ),
         const SizedBox(
-          height: Constraints.kDefaultPadding * 0.8,
+          height: StyleConstants.kDefaultPadding * 0.8,
         ),
       ],
     );

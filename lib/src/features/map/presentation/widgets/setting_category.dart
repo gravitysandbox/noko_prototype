@@ -31,7 +31,7 @@ class SettingCategory extends StatelessWidget {
             ),
           ),
           const SizedBox(
-            height: Constraints.kDefaultPadding * 0.5,
+            height: StyleConstants.kDefaultPadding * 0.5,
           ),
           AbsorbPointer(
             absorbing: isDisabled,

@@ -17,14 +17,14 @@ class NavigationButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const circularRadius = Constraints.kDefaultButtonSize * 0.5;
+    const circularRadius = StyleConstants.kDefaultButtonSize * 0.5;
 
     return BlocBuilder<AppBloc, AppBlocState>(buildWhen: (prev, current) {
       return prev.isDarkTheme != current.isDarkTheme;
     }, builder: (context, state) {
       return Container(
-        height: Constraints.kDefaultButtonSize,
-        width: Constraints.kDefaultButtonSize,
+        height: StyleConstants.kDefaultButtonSize,
+        width: StyleConstants.kDefaultButtonSize,
         decoration: BoxDecoration(
           borderRadius: isLeft
               ? const BorderRadius.only(
@@ -36,8 +36,8 @@ class NavigationButton extends StatelessWidget {
                   bottomLeft: Radius.circular(circularRadius),
                 ),
           color: state.isDarkTheme
-              ? Constraints.kDarkColor()
-              : Constraints.kLightColor(),
+              ? StyleConstants.kDarkColor()
+              : StyleConstants.kLightColor(),
         ),
         child: GestureDetector(
           onTap: () => _openSidebarHandler(context),
@@ -45,10 +45,10 @@ class NavigationButton extends StatelessWidget {
             isLeft
                 ? Icons.keyboard_arrow_right_outlined
                 : Icons.keyboard_arrow_left_outlined,
-            size: Constraints.kDefaultButtonSize,
+            size: StyleConstants.kDefaultButtonSize,
             color: state.isDarkTheme
-                ? Constraints.kLightColor()
-                : Constraints.kDarkColor(),
+                ? StyleConstants.kLightColor()
+                : StyleConstants.kDarkColor(),
           ),
         ),
       );

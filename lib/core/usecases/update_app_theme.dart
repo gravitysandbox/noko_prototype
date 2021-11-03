@@ -4,7 +4,7 @@ import 'package:noko_prototype/core/bloc/app_events.dart';
 import 'package:noko_prototype/core/models/failure.dart';
 import 'package:noko_prototype/core/models/usecase.dart';
 import 'package:noko_prototype/core/utils/logger.dart';
-import 'package:noko_prototype/src/features/map/domain/bloc/geolocation_state.dart';
+import 'package:noko_prototype/src/features/map/domain/bloc/geo_state.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/update_map_theme.dart';
 
 class UpdateAppTheme implements UseCase<Either<Failure, void>, bool> {

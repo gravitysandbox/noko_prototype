@@ -6,11 +6,11 @@ class RouteSwitcherPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const imageSize = Constraints.kDefaultButtonSize * 0.9;
+    const imageSize = StyleConstants.kDefaultButtonSize * 0.9;
 
     return Container(
-      height: Constraints.kDefaultButtonSize,
-      padding: const EdgeInsets.symmetric(horizontal: Constraints.kDefaultPadding / 2.0),
+      height: StyleConstants.kDefaultButtonSize,
+      padding: const EdgeInsets.symmetric(horizontal: StyleConstants.kDefaultPadding / 2.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[

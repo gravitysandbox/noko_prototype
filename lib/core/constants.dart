@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class Constraints {
+class StyleConstants {
   static const kDefaultButtonColor = Colors.black54;
   static const kDefaultButtonSize = 60.0;
   static const kDefaultPadding = 20.0;

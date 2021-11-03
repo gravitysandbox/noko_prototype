@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:noko_prototype/src/features/map/domain/bloc/geolocation_bloc.dart';
-import 'package:noko_prototype/src/features/map/domain/bloc/geolocation_state.dart';
+import 'package:noko_prototype/src/features/map/domain/bloc/geo_bloc.dart';
+import 'package:noko_prototype/src/features/map/domain/bloc/geo_state.dart';
 
 class GoogleMapFragment extends StatefulWidget {
   const GoogleMapFragment({Key? key}) : super(key: key);
@@ -23,39 +23,49 @@ class _GoogleMapFragmentState extends State<GoogleMapFragment> {
 
   final Completer<GoogleMapController> _mapController = Completer();
 
-  Set<Marker> _updateMarkers(GeolocationBlocState state) {
+  Set<Marker> _updateMarkers(GeoBlocState state) {
     final Set<Marker> markersToShow = {};
-
-    if (state.busStopPositions.isNotEmpty) {
-      state.busStopPositions.forEach((name, geo) {
-        markersToShow.add(Marker(
-          markerId: MarkerId(name.toString()),
-          icon: state.busStopIcon ??
-              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-          position: geo,
-        ));
-      });
-    }
 
     if (state.currentPosition != null) {
       markersToShow.add(Marker(
-        markerId: MarkerId(state.currentPosition.toString()),
+        markerId: MarkerId(state.currentPosition!.routeName),
         icon: state.myPositionIcon ??
             BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-        position: state.currentPosition!,
+        position: state.currentPosition!.position,
       ));
+
+      state.currentDestination!.busStopPositions.forEach((name, position) {
+        markersToShow.add(Marker(
+          markerId: MarkerId(name),
+          icon: state.busStopIcon ??
+              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+          position: position,
+        ));
+      });
 
       if (state.utils.isTrackingEnabled!) {
         Future.delayed(const Duration(milliseconds: 500)).then((_) {
-          _animateCamera(state.currentPosition!);
+          _moveCamera(state.currentPosition!.position);
         });
+      }
+    }
+
+    if (state.anotherDestinations != null &&
+        state.anotherPositions!.isNotEmpty) {
+      for (var anotherPosition in state.anotherPositions!) {
+        markersToShow.add(Marker(
+          markerId: MarkerId(anotherPosition.routeName),
+          icon: state.shuttleIcon ??
+              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+          position: anotherPosition.position,
+        ));
       }
     }
 
     return markersToShow;
   }
 
-  Set<Polyline> _updatePolylines(GeolocationBlocState state) {
+  Set<Polyline> _updatePolylines(GeoBlocState state) {
     final Set<Polyline> polylinesToShow = {};
 
     if (state.currentRoute != null && state.currentRoute!.isNotEmpty) {
@@ -76,13 +86,13 @@ class _GoogleMapFragmentState extends State<GoogleMapFragment> {
 
   void _onMapCreated(
     GoogleMapController mapController,
-    GeolocationBlocState state,
+    GeoBlocState state,
   ) {
     _mapController.complete(mapController);
     _updateMapTheme(state);
   }
 
-  void _updateMapTheme(GeolocationBlocState state) {
+  void _updateMapTheme(GeoBlocState state) {
     if (state.mapThemes == null) return;
     _mapController.future.then((controller) {
       controller.setMapStyle(state.currentMapTheme == MapThemeStyle.dark
@@ -91,7 +101,7 @@ class _GoogleMapFragmentState extends State<GoogleMapFragment> {
     });
   }
 
-  void _animateCamera(LatLng coordinates) {
+  void _moveCamera(LatLng coordinates) {
     _mapController.future.then((controller) =>
         controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
           target: coordinates,
@@ -101,7 +111,7 @@ class _GoogleMapFragmentState extends State<GoogleMapFragment> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<GeolocationBloc, GeolocationBlocState>(
+    return BlocConsumer<GeoBloc, GeoBlocState>(
       listener: (context, state) {
         _updateMapTheme(state);
       },

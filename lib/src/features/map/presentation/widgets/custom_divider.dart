@@ -13,7 +13,7 @@ class CustomDivider extends StatelessWidget {
     this.thickness = 2.0,
     this.indent = 0.0,
     this.endIndent = 0.0,
-    this.color = Constraints.kDefaultButtonColor,
+    this.color = StyleConstants.kDefaultButtonColor,
   }) : super(key: key);
 
   @override

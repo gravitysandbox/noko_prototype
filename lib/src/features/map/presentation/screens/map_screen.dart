@@ -7,13 +7,14 @@ import 'package:noko_prototype/core/usecases/update_app_theme.dart';
 import 'package:noko_prototype/core/widgets/scrollable_wrapper.dart';
 import 'package:noko_prototype/locator.dart';
 import 'package:noko_prototype/core/constants.dart';
-import 'package:noko_prototype/src/features/map/domain/bloc/geolocation_bloc.dart';
-import 'package:noko_prototype/src/features/map/domain/bloc/geolocation_state.dart';
+import 'package:noko_prototype/src/features/map/domain/bloc/geo_bloc.dart';
+import 'package:noko_prototype/src/features/map/domain/bloc/geo_state.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/init_google_map.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/update_map_utils.dart';
 import 'package:noko_prototype/src/features/map/presentation/screens/custom_sidebar.dart';
 import 'package:noko_prototype/src/features/map/presentation/widgets/custom_divider.dart';
 import 'package:noko_prototype/src/features/map/presentation/widgets/google_map_fragment.dart';
+import 'package:noko_prototype/src/features/map/presentation/widgets/google_map_label.dart';
 import 'package:noko_prototype/src/features/map/presentation/widgets/navigation_button.dart';
 import 'package:noko_prototype/src/features/map/presentation/widgets/route_button.dart';
 import 'package:noko_prototype/src/features/map/presentation/widgets/route_switcher_panel.dart';
@@ -46,7 +47,7 @@ class _MapScreenState extends State<MapScreen> {
   Widget build(BuildContext context) {
     final mq = MediaQuery.of(context).size;
     final navigationBottomPosition =
-        (mq.height / 2.0) - (Constraints.kDefaultButtonSize / 2.0);
+        (mq.height / 2.0) - (StyleConstants.kDefaultButtonSize / 2.0);
 
     return SafeArea(
       child: Scaffold(
@@ -55,7 +56,19 @@ class _MapScreenState extends State<MapScreen> {
         body: Stack(
           fit: StackFit.expand,
           children: <Widget>[
-            const GoogleMapFragment(),
+            const Positioned(
+              top: GoogleMapLabel.size,
+              left: 0.0,
+              right: 0.0,
+              bottom: 0.0,
+              child: GoogleMapFragment(),
+            ),
+            const Positioned(
+              top: 0.0,
+              left: 0.0,
+              right: 0.0,
+              child: GoogleMapLabel(),
+            ),
             Positioned(
               left: 0.0,
               bottom: navigationBottomPosition,
@@ -170,7 +183,7 @@ class _LeftSidebar extends StatelessWidget {
                         activePosition: 0,
                       ),
                       const SizedBox(
-                        height: Constraints.kDefaultPadding * 0.75,
+                        height: StyleConstants.kDefaultPadding * 0.75,
                       ),
                       SettingCategory(
                         label: 'Monitoring type',
@@ -186,9 +199,9 @@ class _LeftSidebar extends StatelessWidget {
                 },
               ),
               const SizedBox(
-                height: Constraints.kDefaultPadding * 0.75,
+                height: StyleConstants.kDefaultPadding * 0.75,
               ),
-              BlocBuilder<GeolocationBloc, GeolocationBlocState>(
+              BlocBuilder<GeoBloc, GeoBlocState>(
                 buildWhen: (prev, current) {
                   return prev.utils != current.utils;
                 },
@@ -205,7 +218,7 @@ class _LeftSidebar extends StatelessWidget {
                         activePosition: state.utils.isTrafficEnabled! ? 0 : 1,
                       ),
                       const SizedBox(
-                        height: Constraints.kDefaultPadding * 0.75,
+                        height: StyleConstants.kDefaultPadding * 0.75,
                       ),
                       SettingCategory(
                         label: 'Route display',
@@ -217,7 +230,7 @@ class _LeftSidebar extends StatelessWidget {
                         activePosition: state.utils.isRouteEnabled! ? 0 : 1,
                       ),
                       const SizedBox(
-                        height: Constraints.kDefaultPadding * 0.75,
+                        height: StyleConstants.kDefaultPadding * 0.75,
                       ),
                       SettingCategory(
                         label: 'Reverse route',
@@ -230,7 +243,7 @@ class _LeftSidebar extends StatelessWidget {
                         isDisabled: !state.utils.isRouteEnabled!,
                       ),
                       const SizedBox(
-                        height: Constraints.kDefaultPadding * 0.75,
+                        height: StyleConstants.kDefaultPadding * 0.75,
                       ),
                       SettingCategory(
                         label: 'Follow the target',
@@ -279,33 +292,33 @@ class _RightSidebar extends StatelessWidget {
               ),
               CustomDivider(
                 color: state.isDarkTheme
-                    ? Constraints.kLightColor()
-                    : Constraints.kDarkColor(),
+                    ? StyleConstants.kLightColor()
+                    : StyleConstants.kDarkColor(),
               ),
               CategoryButton(
                 label: 'Add routes',
                 icon: Icons.add_to_photos,
                 callback: () {},
                 color: state.isDarkTheme
-                    ? Constraints.kLightColor()
-                    : Constraints.kDefaultButtonColor,
+                    ? StyleConstants.kLightColor()
+                    : StyleConstants.kDefaultButtonColor,
               ),
               CustomDivider(
                 color: state.isDarkTheme
-                    ? Constraints.kLightColor()
-                    : Constraints.kDarkColor(),
+                    ? StyleConstants.kLightColor()
+                    : StyleConstants.kDarkColor(),
               ),
               const RouteSwitcherPanel(),
               CustomDivider(
                 color: state.isDarkTheme
-                    ? Constraints.kLightColor()
-                    : Constraints.kDarkColor(),
+                    ? StyleConstants.kLightColor()
+                    : StyleConstants.kDarkColor(),
               ),
               Container(
-                height: Constraints.kDefaultButtonSize,
+                height: StyleConstants.kDefaultButtonSize,
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(
-                    vertical: Constraints.kDefaultButtonSize * 0.15),
+                    vertical: StyleConstants.kDefaultButtonSize * 0.15),
                 child: const Align(
                   alignment: Alignment.bottomLeft,
                   child: Text(
@@ -320,7 +333,7 @@ class _RightSidebar extends StatelessWidget {
                   physics: const BouncingScrollPhysics(),
                   separatorBuilder: (context, index) {
                     return const SizedBox(
-                      height: Constraints.kDefaultPadding,
+                      height: StyleConstants.kDefaultPadding,
                     );
                   },
                   itemBuilder: (context, index) {

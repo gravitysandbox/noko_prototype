@@ -9,8 +9,8 @@ class ContentWrapper extends StatelessWidget {
   const ContentWrapper({
     Key? key,
     required this.widget,
-    this.verticalPadding = Constraints.kDefaultPadding,
-    this.horizontalPadding = Constraints.kDefaultPadding,
+    this.verticalPadding = StyleConstants.kDefaultPadding,
+    this.horizontalPadding = StyleConstants.kDefaultPadding,
   }) : super(key: key);
 
   @override

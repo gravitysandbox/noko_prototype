@@ -11,18 +11,18 @@ class CategoryButton extends StatelessWidget {
     Key? key,
     required this.label,
     required this.icon,
-    this.color = Constraints.kDefaultButtonColor,
+    this.color = StyleConstants.kDefaultButtonColor,
     required this.callback,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    const iconSize = Constraints.kDefaultButtonSize * 0.5;
+    const iconSize = StyleConstants.kDefaultButtonSize * 0.5;
 
     return GestureDetector(
       onTap: callback,
       child: SizedBox(
-        height: Constraints.kDefaultButtonSize,
+        height: StyleConstants.kDefaultButtonSize,
         child: Row(
           children: <Widget>[
             SizedBox(
@@ -36,7 +36,7 @@ class CategoryButton extends StatelessWidget {
               ),
             ),
             const SizedBox(
-              width: Constraints.kDefaultPadding,
+              width: StyleConstants.kDefaultPadding,
             ),
             Text(
               label,
