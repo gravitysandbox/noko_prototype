@@ -4,22 +4,22 @@ import 'package:noko_prototype/core/models/usecase.dart';
 import 'package:noko_prototype/core/utils/logger.dart';
 import 'package:noko_prototype/src/features/map/domain/bloc/geo_bloc.dart';
 import 'package:noko_prototype/src/features/map/domain/bloc/geo_events.dart';
-import 'package:noko_prototype/src/features/map/domain/models/route_destination_model.dart';
+import 'package:noko_prototype/src/features/map/domain/models/vehicle_route_destination.dart';
 
-class UpdateCurrentDestination
-    implements UseCase<Either<Failure, void>, RouteDestinationModel> {
+class UpdateYourDestination
+    implements UseCase<Either<Failure, void>, VehicleRouteDestination> {
   final GeoBloc bloc;
 
-  const UpdateCurrentDestination({
+  const UpdateYourDestination({
     required this.bloc,
   });
 
   @override
-  Future<Either<Failure, bool>> call(RouteDestinationModel destination) async {
-    logPrint('***** UpdateCurrentDestination call(${destination.routeName})');
+  Future<Either<Failure, bool>> call(VehicleRouteDestination destination) async {
+    logPrint('UpdateYourDestination -> call(${destination.routeName})');
 
-    bloc.add(GeoUpdateCurrentDestination(
-      currentDestination: destination,
+    bloc.add(GeoUpdateYourDestination(
+      yourDestination: destination,
     ));
 
     return const Right(true);

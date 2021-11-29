@@ -26,38 +26,34 @@ class _GoogleMapFragmentState extends State<GoogleMapFragment> {
   Set<Marker> _updateMarkers(GeoBlocState state) {
     final Set<Marker> markersToShow = {};
 
-    if (state.currentPosition != null) {
+    if (state.yourPosition != null) {
       markersToShow.add(Marker(
-        markerId: MarkerId(state.currentPosition!.routeName),
-        icon: state.myPositionIcon ??
-            BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-        position: state.currentPosition!.position,
+        markerId: MarkerId('${state.yourPosition!.routeNumber}-${state.yourPosition!.vehicleID}'),
+        icon: state.icons![MapIconBitmap.you]!,
+        position: state.yourPosition!.position,
       ));
 
-      state.currentDestination!.busStopPositions.forEach((name, position) {
+      for (var stop in state.yourDestination!.busStops) {
         markersToShow.add(Marker(
-          markerId: MarkerId(name),
-          icon: state.busStopIcon ??
-              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-          position: position,
+          markerId: MarkerId(stop.busStopName),
+          icon: state.icons![MapIconBitmap.busStop]!,
+          position: stop.busStopPosition,
         ));
-      });
+      }
 
       if (state.utils.isTrackingEnabled!) {
         Future.delayed(const Duration(milliseconds: 500)).then((_) {
-          _moveCamera(state.currentPosition!.position);
+          _moveCamera(state.yourPosition!.position);
         });
       }
     }
 
-    if (state.anotherDestinations != null &&
-        state.anotherPositions!.isNotEmpty) {
-      for (var anotherPosition in state.anotherPositions!) {
+    if (state.anotherPositions != null && state.anotherPositions!.isNotEmpty) {
+      for (var position in state.anotherPositions!) {
         markersToShow.add(Marker(
-          markerId: MarkerId(anotherPosition.routeName),
-          icon: state.shuttleIcon ??
-              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-          position: anotherPosition.position,
+          markerId: MarkerId('${position.routeNumber}-${position.vehicleID}'),
+          icon: state.icons![MapIconBitmap.another]!,
+          position: position.position,
         ));
       }
     }
@@ -68,18 +64,16 @@ class _GoogleMapFragmentState extends State<GoogleMapFragment> {
   Set<Polyline> _updatePolylines(GeoBlocState state) {
     final Set<Polyline> polylinesToShow = {};
 
-    if (state.currentRoute != null && state.currentRoute!.isNotEmpty) {
-      polylinesToShow.add(Polyline(
-        polylineId: const PolylineId('You route'),
-        width: 6,
-        points: state.currentRoute!,
-        startCap: Cap.roundCap,
-        endCap: Cap.roundCap,
-        color: state.currentMapTheme == MapThemeStyle.light
-            ? Colors.blue
-            : Colors.deepOrange,
-      ));
-    }
+    polylinesToShow.add(Polyline(
+      polylineId: const PolylineId('You route'),
+      width: 6,
+      points: state.yourRoute,
+      startCap: Cap.roundCap,
+      endCap: Cap.roundCap,
+      color: state.currentMapTheme == MapThemeStyle.light
+          ? Colors.blue
+          : Colors.deepOrange,
+    ));
 
     return polylinesToShow;
   }

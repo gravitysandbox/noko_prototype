@@ -7,44 +7,41 @@ class GeoBloc extends Bloc<GeoBlocEvent, GeoBlocState> {
   GeoBloc(GeoBlocState initialState) : super(initialState);
 
   @override
-  Stream<GeoBlocState> mapEventToState(
-      GeoBlocEvent event) async* {
-    logPrint('***** GeolocationBloc mapEventToState(): ${event.runtimeType}');
+  Stream<GeoBlocState> mapEventToState(GeoBlocEvent event) async* {
+    logPrint('GeolocationBloc -> mapEventToState(): ${event.runtimeType}');
     switch (event.runtimeType) {
-      case GeoUpdateIcons:
+      case GeoUpdateYourVehicle:
         {
-          var snapshot = event as GeoUpdateIcons;
+          var snapshot = event as GeoUpdateYourVehicle;
           yield state.copyWith(
-            myPositionIcon: snapshot.myPositionIcon,
-            busStopIcon: snapshot.busStopIcon,
-            shuttleIcon: snapshot.shuttleIcon,
+            yourVehicle: snapshot.yourVehicle,
           );
           break;
         }
 
-      case GeoUpdateCurrentPosition:
+      case GeoUpdateYourPosition:
         {
-          var snapshot = event as GeoUpdateCurrentPosition;
+          var snapshot = event as GeoUpdateYourPosition;
           yield state.copyWith(
-            currentPosition: snapshot.currentPosition,
+            yourPosition: snapshot.yourPosition,
           );
           break;
         }
 
-      case GeoUpdateCurrentDestination:
+      case GeoUpdateYourDestination:
         {
-          var snapshot = event as GeoUpdateCurrentDestination;
+          var snapshot = event as GeoUpdateYourDestination;
           yield state.copyWith(
-            currentDestination: snapshot.currentDestination,
+            yourDestination: snapshot.yourDestination,
           );
           break;
         }
 
-      case GeoUpdateCurrentRoute:
+      case GeoUpdateYourRoute:
         {
-          var snapshot = event as GeoUpdateCurrentRoute;
+          var snapshot = event as GeoUpdateYourRoute;
           yield state.copyWith(
-            currentRoute: snapshot.currentRoute,
+            yourRoute: snapshot.yourRoute,
           );
           break;
         }
@@ -58,11 +55,11 @@ class GeoBloc extends Bloc<GeoBlocEvent, GeoBlocState> {
           break;
         }
 
-      case GeoUpdateAnotherDestinations:
+      case GeoUpdateIcons:
         {
-          var snapshot = event as GeoUpdateAnotherDestinations;
+          var snapshot = event as GeoUpdateIcons;
           yield state.copyWith(
-            anotherDestinations: snapshot.anotherDestinations,
+            icons: snapshot.icons,
           );
           break;
         }
@@ -85,9 +82,9 @@ class GeoBloc extends Bloc<GeoBlocEvent, GeoBlocState> {
           break;
         }
 
-      case GeoUpdateMapTheme:
+      case GeoUpdateCurrentMapTheme:
         {
-          var snapshot = event as GeoUpdateMapTheme;
+          var snapshot = event as GeoUpdateCurrentMapTheme;
           yield state.copyWith(
             currentMapTheme: snapshot.mapTheme,
           );

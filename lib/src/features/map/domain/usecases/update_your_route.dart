@@ -7,32 +7,35 @@ import 'package:noko_prototype/src/features/map/domain/bloc/geo_bloc.dart';
 import 'package:noko_prototype/src/features/map/domain/bloc/geo_events.dart';
 import 'package:noko_prototype/src/features/map/domain/utils/map_utils.dart';
 
-class UpdateCurrentRoute implements UseCase<Either<Failure, void>, LatLng> {
+class UpdateYourRoute implements UseCase<Either<Failure, void>, LatLng> {
   final GeoBloc bloc;
   final MapUtils mapUtils;
 
-  const UpdateCurrentRoute({
+  const UpdateYourRoute({
     required this.bloc,
     required this.mapUtils,
   });
 
   @override
-  Future<Either<Failure, bool>> call(LatLng position, {bool? isReversed}) async {
-    logPrint('***** UpdateCurrentRoute call(${position.latitude} - ${position.longitude})');
+  Future<Either<Failure, bool>> call(LatLng position,
+      {bool? isReversed}) async {
+    logPrint(
+        'UpdateYourRoute -> call(${position.latitude} - ${position.longitude})');
 
-    final destination = isReversed ?? bloc.state.utils.isRouteReversed!
-        ? bloc.state.anotherDestinations!.first.startPosition
-        : bloc.state.anotherDestinations!.first.destinationPosition;
+    if (!bloc.state.utils.isRouteEnabled!) {
+      return const Left(CommonFailure('isRouteEnabled = false'));
+    }
+
     final route = await mapUtils.loadRouteCoordinates(
       position,
-      destination,
+      isReversed ?? bloc.state.utils.isRouteReversed!
+          ? bloc.state.yourDestination!.startBusStop.busStopPosition
+          : bloc.state.yourDestination!.destinationBusStop.busStopPosition,
     );
 
-    if (bloc.state.utils.isRouteEnabled!) {
-      bloc.add(GeoUpdateCurrentRoute(
-        currentRoute: route,
-      ));
-    }
+    bloc.add(GeoUpdateYourRoute(
+      yourRoute: route,
+    ));
 
     return const Right(true);
   }

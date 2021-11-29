@@ -18,7 +18,7 @@ class UpdateAppTheme implements UseCase<Either<Failure, void>, bool> {
 
   @override
   Future<Either<Failure, bool>> call(bool isDark) async {
-    logPrint('***** UpdateAppTheme call($isDark)');
+    logPrint('UpdateAppTheme -> call($isDark)');
     if (appBloc.state.isDarkTheme != isDark) {
       appBloc.add(AppUpdateTheme(
         isDarkTheme: isDark,

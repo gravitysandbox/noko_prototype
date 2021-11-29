@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -10,7 +12,7 @@ class MapUtils {
     BuildContext context,
     String assetSrc,
   ) async {
-    logPrint('***** MapUtils loadMarkerImageFromAsset()');
+    logPrint('MapUtils -> loadMarkerImageFromAsset()');
 
     final imageConfiguration = createLocalImageConfiguration(
       context,
@@ -25,7 +27,7 @@ class MapUtils {
 
   Future<List<LatLng>> loadRouteCoordinates(
       LatLng origin, LatLng destination) async {
-    logPrint('***** MapUtils loadRouteCoordinates()');
+    logPrint('MapUtils -> loadRouteCoordinates()');
 
     List<LatLng> polylineCoordinates = [];
     PolylineResult result = await routeService.getRouteBetweenCoordinates(
@@ -39,7 +41,7 @@ class MapUtils {
         polylineCoordinates.add(LatLng(point.latitude, point.longitude));
       }
     } else {
-      logPrint('***** MapUtils loadPolylineCoordinates()');
+      logPrint('MapUtils -> loadPolylineCoordinates()');
     }
 
     return polylineCoordinates;

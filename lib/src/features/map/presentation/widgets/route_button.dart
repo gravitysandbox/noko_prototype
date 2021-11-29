@@ -14,10 +14,10 @@ class RouteButton extends StatelessWidget {
     this.isDark = false,
   }) : super(key: key);
 
-  static const busActiveColor = Colors.lightGreen;
-  static const shuttleActiveColor = Color(0xFFF3CC30);
-  static const trolleyActiveColor = Colors.pinkAccent;
-  static const disableColor = StyleConstants.kDefaultButtonColor;
+  static const _busActiveColor = Colors.lightGreen;
+  static const _shuttleActiveColor = Color(0xFFF3CC30);
+  static const _trolleyActiveColor = Colors.pinkAccent;
+  static const _disableColor = StyleConstants.kDefaultButtonColor;
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +26,9 @@ class RouteButton extends StatelessWidget {
       child: Container(
         height: StyleConstants.kDefaultButtonSize * 0.9,
         decoration: BoxDecoration(
-          color: isActive ? busActiveColor : null,
+          color: isActive ? _busActiveColor : null,
           border: Border.all(
-            color: disableColor,
+            color: _disableColor,
             width: 2.0,
           ),
           borderRadius: const BorderRadius.all(
@@ -39,7 +39,7 @@ class RouteButton extends StatelessWidget {
           child: Text(
             label,
             style: TextStyle(
-              color: (isDark || isActive) ? Colors.white : disableColor,
+              color: (isDark || isActive) ? Colors.white : _disableColor,
             ),
           ),
         ),

@@ -19,39 +19,42 @@ class NavigationButton extends StatelessWidget {
   Widget build(BuildContext context) {
     const circularRadius = StyleConstants.kDefaultButtonSize * 0.5;
 
-    return BlocBuilder<AppBloc, AppBlocState>(buildWhen: (prev, current) {
-      return prev.isDarkTheme != current.isDarkTheme;
-    }, builder: (context, state) {
-      return Container(
-        height: StyleConstants.kDefaultButtonSize,
-        width: StyleConstants.kDefaultButtonSize,
-        decoration: BoxDecoration(
-          borderRadius: isLeft
-              ? const BorderRadius.only(
-                  topRight: Radius.circular(circularRadius),
-                  bottomRight: Radius.circular(circularRadius),
-                )
-              : const BorderRadius.only(
-                  topLeft: Radius.circular(circularRadius),
-                  bottomLeft: Radius.circular(circularRadius),
-                ),
-          color: state.isDarkTheme
-              ? StyleConstants.kDarkColor()
-              : StyleConstants.kLightColor(),
-        ),
-        child: GestureDetector(
-          onTap: () => _openSidebarHandler(context),
-          child: Icon(
-            isLeft
-                ? Icons.keyboard_arrow_right_outlined
-                : Icons.keyboard_arrow_left_outlined,
-            size: StyleConstants.kDefaultButtonSize,
+    return BlocBuilder<AppBloc, AppBlocState>(
+      buildWhen: (prev, current) {
+        return prev.isDarkTheme != current.isDarkTheme;
+      },
+      builder: (context, state) {
+        return Container(
+          height: StyleConstants.kDefaultButtonSize,
+          width: StyleConstants.kDefaultButtonSize,
+          decoration: BoxDecoration(
+            borderRadius: isLeft
+                ? const BorderRadius.only(
+                    topRight: Radius.circular(circularRadius),
+                    bottomRight: Radius.circular(circularRadius),
+                  )
+                : const BorderRadius.only(
+                    topLeft: Radius.circular(circularRadius),
+                    bottomLeft: Radius.circular(circularRadius),
+                  ),
             color: state.isDarkTheme
-                ? StyleConstants.kLightColor()
-                : StyleConstants.kDarkColor(),
+                ? StyleConstants.kDarkColor()
+                : StyleConstants.kLightColor(),
           ),
-        ),
-      );
-    });
+          child: GestureDetector(
+            onTap: () => _openSidebarHandler(context),
+            child: Icon(
+              isLeft
+                  ? Icons.keyboard_arrow_right_outlined
+                  : Icons.keyboard_arrow_left_outlined,
+              size: StyleConstants.kDefaultButtonSize,
+              color: state.isDarkTheme
+                  ? StyleConstants.kLightColor()
+                  : StyleConstants.kDarkColor(),
+            ),
+          ),
+        );
+      },
+    );
   }
 }

@@ -16,10 +16,10 @@ class UpdateMapTheme
 
   @override
   Future<Either<Failure, bool>> call(MapThemeStyle theme) async {
-    logPrint('***** UpdateMapTheme call($theme)');
+    logPrint('UpdateMapTheme -> call($theme)');
 
     if (bloc.state.currentMapTheme != theme) {
-      bloc.add(GeoUpdateMapTheme(
+      bloc.add(GeoUpdateCurrentMapTheme(
         mapTheme: theme,
       ));
     }

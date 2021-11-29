@@ -8,8 +8,17 @@ class AppBloc extends Bloc<AppBlocEvent, AppBlocState> {
 
   @override
   Stream<AppBlocState> mapEventToState(AppBlocEvent event) async* {
-    logPrint('***** AppBloc mapEventToState(): ${event.runtimeType}');
+    logPrint('AppBloc -> mapEventToState(): ${event.runtimeType}');
     switch (event.runtimeType) {
+      case AppUpdateScreen:
+        {
+          var snapshot = event as AppUpdateScreen;
+          yield state.update(
+            currentScreen: snapshot.currentScreen,
+          );
+          break;
+        }
+
       case AppUpdateTheme:
         {
           var snapshot = event as AppUpdateTheme;

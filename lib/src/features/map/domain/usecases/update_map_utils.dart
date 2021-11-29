@@ -5,11 +5,11 @@ import 'package:noko_prototype/core/utils/logger.dart';
 import 'package:noko_prototype/src/features/map/domain/bloc/geo_bloc.dart';
 import 'package:noko_prototype/src/features/map/domain/bloc/geo_events.dart';
 import 'package:noko_prototype/src/features/map/domain/bloc/geo_state.dart';
-import 'package:noko_prototype/src/features/map/domain/usecases/update_current_route.dart';
+import 'package:noko_prototype/src/features/map/domain/usecases/update_your_route.dart';
 
 class UpdateMapUtils implements UseCase<Either<Failure, void>, MapUtilsState> {
   final GeoBloc bloc;
-  final UpdateCurrentRoute updateRouteUsecase;
+  final UpdateYourRoute updateRouteUsecase;
 
   const UpdateMapUtils({
     required this.bloc,
@@ -18,7 +18,7 @@ class UpdateMapUtils implements UseCase<Either<Failure, void>, MapUtilsState> {
 
   @override
   Future<Either<Failure, bool>> call(MapUtilsState utilsState) async {
-    logPrint('***** UpdateMapUtils call()');
+    logPrint('UpdateMapUtils -> call()');
     bloc.add(GeoUpdateMapUtils(
       utilsState: utilsState,
     ));
@@ -29,14 +29,14 @@ class UpdateMapUtils implements UseCase<Either<Failure, void>, MapUtilsState> {
         utilsState.isRouteEnabled != null &&
         utilsState.isRouteEnabled! &&
         bloc.state.utils.isRouteEnabled! != utilsState.isRouteEnabled!) {
-      updateRouteUsecase.call(bloc.state.currentPosition!.position);
+      updateRouteUsecase.call(bloc.state.yourPosition!.position);
       isRouteUpdated = true;
     }
 
     if (!isRouteUpdated &&
         utilsState.isRouteReversed != null &&
         bloc.state.utils.isRouteReversed! != utilsState.isRouteReversed!) {
-      updateRouteUsecase.call(bloc.state.currentPosition!.position, isReversed: utilsState.isRouteReversed);
+      updateRouteUsecase.call(bloc.state.yourPosition!.position, isReversed: utilsState.isRouteReversed);
       isRouteUpdated = true;
     }
 

@@ -1,6 +1,13 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:noko_prototype/src/features/map/domain/models/route_destination_model.dart';
-import 'package:noko_prototype/src/features/map/domain/models/route_position_model.dart';
+import 'package:noko_prototype/src/features/map/domain/models/vehicle_route_destination.dart';
+import 'package:noko_prototype/src/features/map/domain/models/vehicle_data.dart';
+import 'package:noko_prototype/src/features/map/domain/models/vehicle_position.dart';
+
+enum MapIconBitmap {
+  you,
+  another,
+  busStop,
+}
 
 enum MapThemeStyle {
   light,
@@ -8,30 +15,25 @@ enum MapThemeStyle {
 }
 
 class GeoBlocState {
-  final RoutePositionModel? currentPosition;
-  final RouteDestinationModel? currentDestination;
-  final List<LatLng>? currentRoute;
+  final VehicleData? yourVehicle;
+  final VehiclePosition? yourPosition;
+  final VehicleRouteDestination? yourDestination;
+  final List<LatLng> yourRoute;
 
-  final List<RoutePositionModel>? anotherPositions;
-  final Set<RouteDestinationModel>? anotherDestinations;
+  final List<VehiclePosition>? anotherPositions;
 
-  final BitmapDescriptor? myPositionIcon;
-  final BitmapDescriptor? busStopIcon;
-  final BitmapDescriptor? shuttleIcon;
-
+  final Map<MapIconBitmap, BitmapDescriptor>? icons;
   final MapUtilsState utils;
   final Map<MapThemeStyle, String>? mapThemes;
   final MapThemeStyle currentMapTheme;
 
   const GeoBlocState({
-    this.currentPosition,
-    this.currentDestination,
-    this.currentRoute = const [],
+    this.yourVehicle,
+    this.yourPosition,
+    this.yourDestination,
+    this.yourRoute = const [],
     this.anotherPositions = const [],
-    this.anotherDestinations = const {},
-    this.myPositionIcon,
-    this.busStopIcon,
-    this.shuttleIcon,
+    this.icons,
     this.utils = const MapUtilsState(),
     this.mapThemes = const {},
     this.currentMapTheme = MapThemeStyle.light,
@@ -50,27 +52,24 @@ class GeoBlocState {
   }
 
   GeoBlocState copyWith({
-    RoutePositionModel? currentPosition,
-    RouteDestinationModel? currentDestination,
-    List<LatLng>? currentRoute,
-    List<RoutePositionModel>? anotherPositions,
-    Set<RouteDestinationModel>? anotherDestinations,
-    BitmapDescriptor? myPositionIcon,
-    BitmapDescriptor? busStopIcon,
-    BitmapDescriptor? shuttleIcon,
+    VehicleData? yourVehicle,
+    VehiclePosition? yourPosition,
+    VehicleRouteDestination? yourDestination,
+    List<LatLng>? yourRoute,
+    List<VehiclePosition>? anotherPositions,
+    Set<VehicleRouteDestination>? anotherDestinations,
+    Map<MapIconBitmap, BitmapDescriptor>? icons,
     MapUtilsState? utils,
     Map<MapThemeStyle, String>? mapThemes,
     MapThemeStyle? currentMapTheme,
   }) {
     return GeoBlocState(
-      currentPosition: currentPosition ?? this.currentPosition,
-      currentDestination: currentDestination ?? this.currentDestination,
-      currentRoute: currentRoute ?? this.currentRoute,
+      yourVehicle: yourVehicle ?? this.yourVehicle,
+      yourPosition: yourPosition ?? this.yourPosition,
+      yourDestination: yourDestination ?? this.yourDestination,
+      yourRoute: yourRoute ?? this.yourRoute,
       anotherPositions: anotherPositions ?? this.anotherPositions,
-      anotherDestinations: anotherDestinations ?? this.anotherDestinations,
-      myPositionIcon: myPositionIcon ?? this.myPositionIcon,
-      busStopIcon: busStopIcon ?? this.busStopIcon,
-      shuttleIcon: shuttleIcon ?? this.shuttleIcon,
+      icons: icons ?? this.icons,
       utils: utils != null ? this.utils.copyWith(utils) : this.utils,
       mapThemes: mapThemes ?? this.mapThemes,
       currentMapTheme: currentMapTheme ?? this.currentMapTheme,

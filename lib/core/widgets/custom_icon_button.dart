@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:noko_prototype/core/constants.dart';
 
-class CategoryButton extends StatelessWidget {
+class CustomIconButton extends StatelessWidget {
   final String label;
   final IconData icon;
   final Color color;
   final VoidCallback callback;
 
-  const CategoryButton({
+  const CustomIconButton({
     Key? key,
     required this.label,
     required this.icon,

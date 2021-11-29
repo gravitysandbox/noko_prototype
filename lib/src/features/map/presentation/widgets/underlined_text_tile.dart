@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:noko_prototype/core/constants.dart';
-import 'package:noko_prototype/src/features/map/presentation/widgets/custom_divider.dart';
+import 'package:noko_prototype/core/widgets/custom_divider.dart';
 
 class UnderlinedTextTile extends StatelessWidget {
   final String label, description;

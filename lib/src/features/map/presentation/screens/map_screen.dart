@@ -4,22 +4,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:noko_prototype/core/bloc/app_bloc.dart';
 import 'package:noko_prototype/core/bloc/app_state.dart';
 import 'package:noko_prototype/core/usecases/update_app_theme.dart';
+import 'package:noko_prototype/core/widgets/custom_icon_button.dart';
 import 'package:noko_prototype/core/widgets/scrollable_wrapper.dart';
 import 'package:noko_prototype/locator.dart';
 import 'package:noko_prototype/core/constants.dart';
 import 'package:noko_prototype/src/features/map/domain/bloc/geo_bloc.dart';
 import 'package:noko_prototype/src/features/map/domain/bloc/geo_state.dart';
-import 'package:noko_prototype/src/features/map/domain/usecases/init_google_map.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/update_map_utils.dart';
+import 'package:noko_prototype/src/features/map/domain/utils/map_updater.dart';
 import 'package:noko_prototype/src/features/map/presentation/screens/custom_sidebar.dart';
-import 'package:noko_prototype/src/features/map/presentation/widgets/custom_divider.dart';
+import 'package:noko_prototype/core/widgets/custom_divider.dart';
 import 'package:noko_prototype/src/features/map/presentation/widgets/google_map_fragment.dart';
 import 'package:noko_prototype/src/features/map/presentation/widgets/google_map_label.dart';
 import 'package:noko_prototype/src/features/map/presentation/widgets/navigation_button.dart';
 import 'package:noko_prototype/src/features/map/presentation/widgets/route_button.dart';
 import 'package:noko_prototype/src/features/map/presentation/widgets/route_switcher_panel.dart';
 import 'package:noko_prototype/src/features/map/presentation/widgets/setting_category.dart';
-import 'package:noko_prototype/src/features/map/presentation/widgets/category_button.dart';
 import 'package:noko_prototype/src/features/map/presentation/widgets/underlined_text_tile.dart';
 
 class MapScreen extends StatefulWidget {
@@ -35,17 +35,25 @@ class _MapScreenState extends State<MapScreen> {
   bool _isInit = false;
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     super.didChangeDependencies();
     if (!_isInit) {
-      locator<InitGoogleMap>().call(context);
+      locator<MapUpdater>().startTracking();
       _isInit = true;
     }
   }
 
   @override
+  void dispose() {
+    locator<MapUpdater>().stopTracking();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final mq = MediaQuery.of(context).size;
+    final mq = MediaQuery
+        .of(context)
+        .size;
     final navigationBottomPosition =
         (mq.height / 2.0) - (StyleConstants.kDefaultButtonSize / 2.0);
 
@@ -284,7 +292,7 @@ class _RightSidebar extends StatelessWidget {
         builder: (context, state) {
           return Column(
             children: <Widget>[
-              CategoryButton(
+              CustomIconButton(
                 label: 'My position',
                 icon: Icons.api,
                 color: Colors.blue,
@@ -295,7 +303,7 @@ class _RightSidebar extends StatelessWidget {
                     ? StyleConstants.kLightColor()
                     : StyleConstants.kDarkColor(),
               ),
-              CategoryButton(
+              CustomIconButton(
                 label: 'Add routes',
                 icon: Icons.add_to_photos,
                 callback: () {},

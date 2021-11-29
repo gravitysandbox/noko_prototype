@@ -5,6 +5,8 @@ class StyleConstants {
   static const kDefaultButtonSize = 60.0;
   static const kDefaultPadding = 20.0;
 
+  static const kPrimaryColor = Colors.blue;
+
   static Color kLightColor() => Colors.grey[50]!;
 
   static Color kDarkColor() => Colors.grey[850]!;

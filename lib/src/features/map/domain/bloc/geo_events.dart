@@ -1,66 +1,59 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:noko_prototype/src/features/map/domain/bloc/geo_state.dart';
-import 'package:noko_prototype/src/features/map/domain/models/route_destination_model.dart';
-import 'package:noko_prototype/src/features/map/domain/models/route_position_model.dart';
+import 'package:noko_prototype/src/features/map/domain/models/vehicle_route_destination.dart';
+import 'package:noko_prototype/src/features/map/domain/models/vehicle_data.dart';
+import 'package:noko_prototype/src/features/map/domain/models/vehicle_position.dart';
 
 abstract class GeoBlocEvent {
   const GeoBlocEvent([List props = const []]) : super();
 }
 
-class GeoUpdateIcons extends GeoBlocEvent {
-  final BitmapDescriptor myPositionIcon;
-  final BitmapDescriptor busStopIcon;
-  final BitmapDescriptor shuttleIcon;
+class GeoUpdateYourVehicle extends GeoBlocEvent {
+  final VehicleData yourVehicle;
 
-  GeoUpdateIcons({
-    required this.myPositionIcon,
-    required this.busStopIcon,
-    required this.shuttleIcon,
-  }) : super([
-          myPositionIcon,
-          busStopIcon,
-          shuttleIcon,
-        ]);
+  GeoUpdateYourVehicle({
+    required this.yourVehicle,
+  }) : super([yourVehicle]);
 }
 
-class GeoUpdateCurrentPosition extends GeoBlocEvent {
-  final RoutePositionModel currentPosition;
+class GeoUpdateYourPosition extends GeoBlocEvent {
+  final VehiclePosition yourPosition;
 
-  GeoUpdateCurrentPosition({
-    required this.currentPosition,
-  }) : super([currentPosition]);
+  GeoUpdateYourPosition({
+    required this.yourPosition,
+  }) : super([yourPosition]);
 }
 
-class GeoUpdateCurrentDestination extends GeoBlocEvent {
-  final RouteDestinationModel currentDestination;
+class GeoUpdateYourDestination extends GeoBlocEvent {
+  final VehicleRouteDestination yourDestination;
 
-  GeoUpdateCurrentDestination({
-    required this.currentDestination,
-  }) : super([currentDestination]);
+  GeoUpdateYourDestination({
+    required this.yourDestination,
+  }) : super([yourDestination]);
 }
 
-class GeoUpdateCurrentRoute extends GeoBlocEvent {
-  final List<LatLng> currentRoute;
+class GeoUpdateYourRoute extends GeoBlocEvent {
+  final List<LatLng> yourRoute;
 
-  GeoUpdateCurrentRoute({
-    required this.currentRoute,
-  }) : super([currentRoute]);
+  GeoUpdateYourRoute({
+    required this.yourRoute,
+  }) : super([yourRoute]);
 }
 
 class GeoUpdateAnotherPositions extends GeoBlocEvent {
-  final List<RoutePositionModel> anotherPositions;
+  final List<VehiclePosition> anotherPositions;
 
   GeoUpdateAnotherPositions({
     required this.anotherPositions,
   }) : super([anotherPositions]);
 }
 
-class GeoUpdateAnotherDestinations extends GeoBlocEvent {
-  final Set<RouteDestinationModel> anotherDestinations;
+class GeoUpdateIcons extends GeoBlocEvent {
+  final Map<MapIconBitmap, BitmapDescriptor> icons;
 
-  GeoUpdateAnotherDestinations({
-    required this.anotherDestinations,
-  }) : super([anotherDestinations]);
+  GeoUpdateIcons({
+    required this.icons,
+  }) : super([icons]);
 }
 
 class GeoUpdateMapUtils extends GeoBlocEvent {
@@ -79,10 +72,10 @@ class GeoInitMapThemes extends GeoBlocEvent {
   }) : super([mapThemes]);
 }
 
-class GeoUpdateMapTheme extends GeoBlocEvent {
+class GeoUpdateCurrentMapTheme extends GeoBlocEvent {
   final MapThemeStyle mapTheme;
 
-  GeoUpdateMapTheme({
+  GeoUpdateCurrentMapTheme({
     required this.mapTheme,
   }) : super([mapTheme]);
 }
