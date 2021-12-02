@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dartz/dartz.dart';
 import 'package:dartz/dartz_unsafe.dart';
 import 'package:flutter/cupertino.dart';
@@ -49,9 +51,15 @@ class InitMapScreen implements UseCase<Either<Failure, void>, BuildContext> {
   Future<Either<Failure, bool>> call(BuildContext context) async {
     logPrint('InitMapScreen -> call()');
     BitmapDescriptor yourPositionIcon = await mapUtils.loadMarkerImageFromAsset(
-        context, 'assets/icons/ic_my_transport.png');
+        context,
+        Platform.isAndroid
+            ? 'assets/icons/ic_my_transport.png'
+            : 'assets/icons/ic_my_transport_small.png');
     BitmapDescriptor busStopIcon = await mapUtils.loadMarkerImageFromAsset(
-        context, 'assets/icons/ic_bus_stop.png');
+        context,
+        Platform.isAndroid
+            ? 'assets/icons/ic_bus_stop.png'
+            : 'assets/icons/ic_bus_stop_small.png');
 
     /// Set icons
     geoBloc.add(GeoUpdateIcons(
@@ -105,7 +113,8 @@ class InitMapScreen implements UseCase<Either<Failure, void>, BuildContext> {
       }
 
       var vehicleIndex = garageBloc.state.vehicles.indexOf(vehicle);
-      var routeID = garageBloc.state.timetables[vehicleIndex]!.timetable[0].routeID;
+      var routeID =
+          garageBloc.state.timetables[vehicleIndex]!.timetable[0].routeID;
 
       /// Get all vehicles in the route
       var positions = await mapRemoteDatasource.getVehiclePosition(
@@ -130,8 +139,11 @@ class InitMapScreen implements UseCase<Either<Failure, void>, BuildContext> {
           busStops: busStops,
         ));
 
-        updateYourPosition.call(positions.firstWhere((pos) => pos.vehicleID == vehicle.vehicleID));
-        updateNearestPositions.call(positions.where((pos) => pos.vehicleID != vehicle.vehicleID).toList());
+        updateYourPosition.call(
+            positions.firstWhere((pos) => pos.vehicleID == vehicle.vehicleID));
+        updateNearestPositions.call(positions
+            .where((pos) => pos.vehicleID != vehicle.vehicleID)
+            .toList());
       } else {
         anotherDestinations.add(VehicleRouteDestination(
           vehicleID: vehicle.vehicleID,
