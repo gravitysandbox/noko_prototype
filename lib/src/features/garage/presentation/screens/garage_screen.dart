@@ -18,6 +18,15 @@ class GarageScreen extends StatelessWidget {
         style: StyleConstants.kDarkTheme.textTheme.bodyText2!,
         child: Scaffold(
           backgroundColor: StyleConstants.kDarkColor(),
+          floatingActionButton: Padding(
+            padding: const EdgeInsets.only(bottom: StyleConstants.kDefaultPadding),
+            child: FloatingActionButton(
+              child: const Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ),
           appBar: AppBar(
             title: const Text('Гараж'),
           ),
@@ -38,7 +47,8 @@ class GarageScreen extends StatelessWidget {
                   leading: Image.asset(state.schedules[index] != null
                       ? 'assets/images/btn_shuttle_yellow.png'
                       : 'assets/images/btn_shuttle_grey.png'),
-                  title: Text('${state.vehicles[index].vehicleName} - ${state.vehicles[index].vehicleID}'),
+                  title: Text(
+                      '${state.vehicles[index].vehicleName} - ${state.vehicles[index].vehicleID}'),
                   subtitle: Text(
                     state.vehicles[index].vehicleType.toString(),
                     style: const TextStyle(

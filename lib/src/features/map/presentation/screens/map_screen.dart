@@ -57,6 +57,15 @@ class _MapScreenState extends State<MapScreen> {
 
     return SafeArea(
       child: Scaffold(
+        floatingActionButton: Padding(
+          padding: const EdgeInsets.only(bottom: StyleConstants.kDefaultPadding),
+          child: FloatingActionButton(
+            child: const Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ),
         drawer: const _LeftSidebar(),
         endDrawer: const _RightSidebar(),
         body: Stack(
