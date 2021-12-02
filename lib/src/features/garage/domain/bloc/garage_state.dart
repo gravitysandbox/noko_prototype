@@ -1,21 +1,31 @@
+import 'package:noko_prototype/src/features/map/domain/models/vehicle_data.dart';
+import 'package:noko_prototype/src/features/map/domain/models/vehicle_schedule_data.dart';
+import 'package:noko_prototype/src/features/map/domain/models/vehicle_timetable_data.dart';
+
 class GarageBlocState {
-  final bool test;
+  final List<VehicleData> vehicles;
+  final List<VehicleFullScheduleData?> schedules;
+  final List<VehicleTimetableData?> timetables;
 
   const GarageBlocState({
-    required this.test,
+    this.vehicles = const [],
+    this.schedules = const [],
+    this.timetables = const [],
   });
 
   factory GarageBlocState.initial() {
-    return const GarageBlocState(
-      test: true,
-    );
+    return const GarageBlocState();
   }
 
   GarageBlocState copyWith({
-    bool? test,
+    List<VehicleData>? vehicles,
+    List<VehicleFullScheduleData?>? schedules,
+    List<VehicleTimetableData?>? timetables,
   }) {
     return GarageBlocState(
-      test: test ?? this.test,
+      vehicles: vehicles ?? this.vehicles,
+      schedules: schedules ?? this.schedules,
+      timetables: timetables ?? this.timetables,
     );
   }
 }

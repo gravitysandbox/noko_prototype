@@ -7,15 +7,32 @@ class GarageBloc extends Bloc<GarageBlocEvent, GarageBlocState> {
   GarageBloc(GarageBlocState initialState) : super(initialState);
 
   @override
-  Stream<GarageBlocState> mapEventToState(
-      GarageBlocEvent event) async* {
+  Stream<GarageBlocState> mapEventToState(GarageBlocEvent event) async* {
     logPrint('GarageBloc -> mapEventToState(): ${event.runtimeType}');
     switch (event.runtimeType) {
-      case GarageUpdateTest:
+      case GarageUpdateAllVehicles:
         {
-          var snapshot = event as GarageUpdateTest;
+          var snapshot = event as GarageUpdateAllVehicles;
           yield state.copyWith(
-            test: snapshot.test,
+            vehicles: snapshot.vehicles,
+          );
+          break;
+        }
+
+      case GarageUpdateAllSchedules:
+        {
+          var snapshot = event as GarageUpdateAllSchedules;
+          yield state.copyWith(
+            schedules: snapshot.schedules,
+          );
+          break;
+        }
+
+      case GarageUpdateAllTimetables:
+        {
+          var snapshot = event as GarageUpdateAllTimetables;
+          yield state.copyWith(
+            timetables: snapshot.timetables,
           );
           break;
         }

@@ -14,7 +14,7 @@ class GeoBloc extends Bloc<GeoBlocEvent, GeoBlocState> {
         {
           var snapshot = event as GeoUpdateYourVehicle;
           yield state.copyWith(
-            yourVehicle: snapshot.yourVehicle,
+            yourVehicleID: snapshot.yourVehicleID,
           );
           break;
         }
@@ -46,11 +46,11 @@ class GeoBloc extends Bloc<GeoBlocEvent, GeoBlocState> {
           break;
         }
 
-      case GeoUpdateAnotherPositions:
+      case GeoUpdateNearestPositions:
         {
-          var snapshot = event as GeoUpdateAnotherPositions;
+          var snapshot = event as GeoUpdateNearestPositions;
           yield state.copyWith(
-            anotherPositions: snapshot.anotherPositions,
+            anotherPositions: snapshot.nearestPositions,
           );
           break;
         }

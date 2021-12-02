@@ -3,7 +3,7 @@ import 'package:noko_prototype/core/constants.dart';
 import 'package:noko_prototype/core/widgets/custom_divider.dart';
 import 'package:noko_prototype/core/widgets/custom_text_button.dart';
 import 'package:noko_prototype/locator.dart';
-import 'package:noko_prototype/src/features/map/domain/usecases/init_google_map.dart';
+import 'package:noko_prototype/src/features/map/domain/usecases/init_map_screen.dart';
 import 'package:noko_prototype/src/features/map/presentation/screens/map_screen.dart';
 
 class MapSettingsScreen extends StatefulWidget {
@@ -23,7 +23,7 @@ class _MapSettingsScreenState extends State<MapSettingsScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_isInit) {
-      locator<InitGoogleMap>().call(context);
+      locator<InitMapScreen>().call(context);
       _isInit = true;
     }
   }
@@ -70,8 +70,13 @@ class _MapSettingsScreenState extends State<MapSettingsScreen> {
       length: _routeTabs.length,
       child: Column(
         children: <Widget>[
-          TabBar(
-            tabs: _routeTabs,
+          DecoratedBox(
+            decoration: const BoxDecoration(
+              color: StyleConstants.kPrimaryColor,
+            ),
+            child: TabBar(
+              tabs: _routeTabs,
+            ),
           ),
           const Expanded(
             child: TabBarView(
@@ -91,8 +96,13 @@ class _MapSettingsScreenState extends State<MapSettingsScreen> {
       length: _vehicleTabs.length,
       child: Column(
         children: <Widget>[
-          TabBar(
-            tabs: _vehicleTabs,
+          DecoratedBox(
+            decoration: const BoxDecoration(
+              color: StyleConstants.kPrimaryColor,
+            ),
+            child: TabBar(
+              tabs: _vehicleTabs,
+            ),
           ),
           const Expanded(
             child: TabBarView(
@@ -114,7 +124,7 @@ class _MapSettingsScreenState extends State<MapSettingsScreen> {
       child: DefaultTextStyle(
         style: StyleConstants.kDarkTheme.textTheme.bodyText2!,
         child: Scaffold(
-          backgroundColor: StyleConstants.kPrimaryColor,
+          backgroundColor: StyleConstants.kDarkColor(),
           appBar: AppBar(
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -143,8 +153,8 @@ class _MapSettingsScreenState extends State<MapSettingsScreen> {
               ),
               Container(
                 width: double.infinity,
-                decoration: const BoxDecoration(
-                  color: Colors.grey,
+                decoration: BoxDecoration(
+                  color: Colors.yellow.shade800.withOpacity(0.9),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
@@ -261,18 +271,31 @@ class _RouteSettingsState extends State<_RouteSettings> {
             ),
           ],
         ),
-        const CustomDivider(),
+        CustomDivider(
+          size: 1.0,
+          thickness: 1.0,
+          color: Colors.grey.withOpacity(0.3),
+        ),
         Expanded(
           child: ListView.separated(
             physics: const BouncingScrollPhysics(),
             itemCount: _temp.length,
             separatorBuilder: (context, index) {
-              return const CustomDivider();
+              return CustomDivider(
+                size: 1.0,
+                thickness: 1.0,
+                color: Colors.grey.withOpacity(0.3),
+              );
             },
             itemBuilder: (context, index) {
               return ListTile(
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
-                leading: Text(_temp[index]),
+                leading: Text(
+                  _temp[index],
+                  style: const TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
                 trailing: Checkbox(
                   value: _selected.contains(index),
                   onChanged: (value) => _onSelectItemHandler(value!, index),
@@ -355,18 +378,31 @@ class _VehicleSettingsState extends State<_VehicleSettings> {
             ),
           ],
         ),
-        const CustomDivider(),
+        CustomDivider(
+          size: 1.0,
+          thickness: 1.0,
+          color: Colors.grey.withOpacity(0.3),
+        ),
         Expanded(
           child: ListView.separated(
             physics: const BouncingScrollPhysics(),
             itemCount: _temp.length,
             separatorBuilder: (context, index) {
-              return const CustomDivider();
+              return CustomDivider(
+                size: 1.0,
+                thickness: 1.0,
+                color: Colors.grey.withOpacity(0.3),
+              );
             },
             itemBuilder: (context, index) {
               return ListTile(
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
-                leading: Text(_temp[index]),
+                leading: Text(
+                  _temp[index],
+                  style: const TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
                 trailing: Checkbox(
                   value: _selected.contains(index),
                   onChanged: (value) => _onSelectItemHandler(value!, index),

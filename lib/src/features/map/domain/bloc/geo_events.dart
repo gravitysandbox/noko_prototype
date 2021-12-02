@@ -1,7 +1,6 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:noko_prototype/src/features/map/domain/bloc/geo_state.dart';
 import 'package:noko_prototype/src/features/map/domain/models/vehicle_route_destination.dart';
-import 'package:noko_prototype/src/features/map/domain/models/vehicle_data.dart';
 import 'package:noko_prototype/src/features/map/domain/models/vehicle_position.dart';
 
 abstract class GeoBlocEvent {
@@ -9,11 +8,11 @@ abstract class GeoBlocEvent {
 }
 
 class GeoUpdateYourVehicle extends GeoBlocEvent {
-  final VehicleData yourVehicle;
+  final int yourVehicleID;
 
   GeoUpdateYourVehicle({
-    required this.yourVehicle,
-  }) : super([yourVehicle]);
+    required this.yourVehicleID,
+  }) : super([yourVehicleID]);
 }
 
 class GeoUpdateYourPosition extends GeoBlocEvent {
@@ -38,6 +37,22 @@ class GeoUpdateYourRoute extends GeoBlocEvent {
   GeoUpdateYourRoute({
     required this.yourRoute,
   }) : super([yourRoute]);
+}
+
+class GeoUpdateNearestPositions extends GeoBlocEvent {
+  final List<VehiclePosition> nearestPositions;
+
+  GeoUpdateNearestPositions({
+    required this.nearestPositions,
+  }) : super([nearestPositions]);
+}
+
+class GeoUpdateAnotherDestinations extends GeoBlocEvent {
+  final List<VehicleRouteDestination> anotherDestinations;
+
+  GeoUpdateAnotherDestinations({
+    required this.anotherDestinations,
+  }) : super([anotherDestinations]);
 }
 
 class GeoUpdateAnotherPositions extends GeoBlocEvent {

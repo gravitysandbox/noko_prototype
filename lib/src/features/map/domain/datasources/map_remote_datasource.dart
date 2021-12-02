@@ -1,81 +1,15 @@
 import 'package:dio/dio.dart';
 import 'package:noko_prototype/core/data/datasources/remote_datasource.dart';
 import 'package:noko_prototype/core/utils/logger.dart';
-import 'package:noko_prototype/src/features/map/domain/models/region_data.dart';
 import 'package:noko_prototype/src/features/map/domain/models/route_data.dart';
 import 'package:noko_prototype/src/features/map/domain/models/vehicle_bus_stop_data.dart';
-import 'package:noko_prototype/src/features/map/domain/models/vehicle_data.dart';
 import 'package:noko_prototype/src/features/map/domain/models/vehicle_position.dart';
 import 'package:noko_prototype/src/features/map/domain/models/vehicle_route_data.dart';
+import 'package:noko_prototype/src/features/map/domain/models/vehicle_route_destination.dart';
 import 'package:noko_prototype/src/features/map/domain/models/vehicle_schedule_data.dart';
-import 'package:noko_prototype/src/features/map/domain/models/vehicle_timetable_data.dart';
 
 class MapRemoteDatasource extends RemoteDataSource {
   final Dio _client = Dio();
-
-  Future<List<RegionData>?> getRegions(int instanceID) async {
-    logPrint('MapRemoteDatasource -> getRegions($instanceID)');
-    final httpRequestURL = '$url/instanceId/$instanceID/regions';
-    Response? response;
-
-    try {
-      handleRequest(httpRequestURL);
-      response = await _client.get(httpRequestURL);
-    } on DioError catch (e) {
-      handleResponseStatusErrors(e);
-    }
-
-    if (response == null ||
-        response.data == null ||
-        response.data['data'] == null) {
-      return null;
-    }
-
-    final responseData = response.data as Map<String, dynamic>;
-    handleResponse(responseData);
-    final List<RegionData> regions = [];
-
-    for (var region in responseData['data'] as List) {
-      regions.add(RegionData.fromJson(region));
-    }
-
-    return regions;
-  }
-
-  Future<List<VehicleData>?> getRegionVehicles(
-    int instanceID,
-    int regionID,
-  ) async {
-    logPrint(
-        'MapRemoteDatasource -> getRegionVehicles($instanceID, $regionID)');
-    final httpRequestURL = '$url/instanceId/$instanceID/vehicles';
-    Response? response;
-
-    try {
-      handleRequest(httpRequestURL);
-      response = await _client.get(httpRequestURL);
-    } on DioError catch (e) {
-      handleResponseStatusErrors(e);
-    }
-
-    if (response == null ||
-        response.data == null ||
-        response.data['data'] == null) {
-      return null;
-    }
-
-    final responseData = response.data as Map<String, dynamic>;
-    handleResponse(responseData);
-    final List<VehicleData> regionVehicles = [];
-
-    for (var vehicle in responseData['data'] as List) {
-      if (vehicle['idRegion'] == regionID) {
-        regionVehicles.add(VehicleData.fromJson(vehicle));
-      }
-    }
-
-    return regionVehicles;
-  }
 
   Future<List<RouteData>?> getRegionRoutes(
     int instanceID,
@@ -92,14 +26,11 @@ class MapRemoteDatasource extends RemoteDataSource {
       handleResponseStatusErrors(e);
     }
 
-    if (response == null ||
-        response.data == null ||
-        response.data['data'] == null) {
+    if (!handleResponse(response)) {
       return null;
     }
 
-    final responseData = response.data as Map<String, dynamic>;
-    handleResponse(responseData);
+    final responseData = response!.data as Map<String, dynamic>;
     final List<RouteData> routes = [];
 
     for (var route in responseData['data'] as List) {
@@ -128,74 +59,12 @@ class MapRemoteDatasource extends RemoteDataSource {
       handleResponseStatusErrors(e);
     }
 
-    if (response == null ||
-        response.data == null ||
-        response.data['data'] == null) {
+    if (!handleResponse(response, [212])) {
       return null;
     }
 
-    final responseData = response.data as Map<String, dynamic>;
-    handleResponse(responseData);
+    final responseData = response!.data as Map<String, dynamic>;
     return VehicleShortScheduleData.fromJson(responseData['data']);
-  }
-
-  Future<VehicleFullScheduleData?> getVehicleFullSchedule(
-    int instanceID,
-    int vehicleID,
-    String date,
-  ) async {
-    logPrint(
-        'MapRemoteDatasource -> getVehicleFullSchedule($instanceID, $vehicleID, $date)');
-    final httpRequestURL =
-        '$url/instanceId/$instanceID/idVehicle/$vehicleID/DateNar/$date/scheduleTS';
-    Response? response;
-
-    try {
-      handleRequest(httpRequestURL);
-      response = await _client.get(httpRequestURL);
-    } on DioError catch (e) {
-      handleResponseStatusErrors(e);
-    }
-
-    if (response == null ||
-        response.data == null ||
-        response.data['data'] == null) {
-      return null;
-    }
-
-    final responseData = response.data as Map<String, dynamic>;
-    handleResponse(responseData);
-    return VehicleFullScheduleData.fromJson(responseData['data']);
-  }
-
-  Future<VehicleTimetableData?> getVehicleTimetable(
-    int instanceID,
-    int regionID,
-    int vehicleID,
-    String date,
-  ) async {
-    logPrint(
-        'MapRemoteDatasource -> getVehicleTimetable($instanceID, $regionID, $vehicleID, $date)');
-    final httpRequestURL =
-        '$url/instanceId/$instanceID/date/$date/region/$regionID/idVehicle/$vehicleID/rasp';
-    Response? response;
-
-    try {
-      handleRequest(httpRequestURL);
-      response = await _client.get(httpRequestURL);
-    } on DioError catch (e) {
-      handleResponseStatusErrors(e);
-    }
-
-    if (response == null ||
-        response.data == null ||
-        response.data['data'] == null) {
-      return null;
-    }
-
-    final responseData = response.data as Map<String, dynamic>;
-    handleResponse(responseData);
-    return VehicleTimetableData.fromJson(responseData['data']);
   }
 
   Future<VehicleRouteData?> getVehicleRouteData(
@@ -217,14 +86,11 @@ class MapRemoteDatasource extends RemoteDataSource {
       handleResponseStatusErrors(e);
     }
 
-    if (response == null ||
-        response.data == null ||
-        response.data['data'] == null) {
+    if (!handleResponse(response)) {
       return null;
     }
 
-    final responseData = response.data as Map<String, dynamic>;
-    handleResponse(responseData);
+    final responseData = response!.data as Map<String, dynamic>;
     return VehicleRouteData.fromJson(responseData['data']);
   }
 
@@ -245,12 +111,11 @@ class MapRemoteDatasource extends RemoteDataSource {
       handleResponseStatusErrors(e);
     }
 
-    if (response == null || response.data == null) {
+    if (!handleResponse(response)) {
       return null;
     }
 
-    final responseData = response.data as List<dynamic>;
-    handleResponse(responseData);
+    final responseData = response!.data as List<dynamic>;
     final List<VehicleBusStopData> busStops = [];
 
     for (var busStop in responseData) {
@@ -293,14 +158,11 @@ class MapRemoteDatasource extends RemoteDataSource {
       handleResponseStatusErrors(e);
     }
 
-    if (response == null ||
-        response.data == null ||
-        response.data['data'] == null) {
+    if (!handleResponse(response, [0, 302, 303])) {
       return null;
     }
 
-    final responseData = response.data as Map<String, dynamic>;
-    handleResponse(responseData);
+    final responseData = response!.data as Map<String, dynamic>;
     final List<VehiclePosition> positions = [];
 
     for (var position in responseData['data'] as List) {
@@ -308,5 +170,33 @@ class MapRemoteDatasource extends RemoteDataSource {
     }
 
     return positions;
+  }
+
+  Future<List<VehiclePosition>?> getMultipleVehiclePosition(
+      int instanceID,
+      int regionID,
+      List<VehicleRouteDestination> destinations,
+      ) async {
+    logPrint(
+        'MapRemoteDatasource -> getMultipleVehiclePosition($instanceID, $regionID, ${destinations.length})');
+    final List<VehiclePosition> anotherPositions = [];
+    var amount = destinations.length;
+    var counter = 0;
+
+    for (var destination in destinations) {
+      final positions = await getVehiclePosition(instanceID, regionID, destination.vehicleID, destination.routeID, destination.busStops.map((s) => s.busStopID)
+          .toList());
+
+      if (positions != null) {
+        anotherPositions.addAll(positions);
+      }
+      counter++;
+    }
+
+    while (counter != amount) {
+      await Future.delayed(const Duration(seconds: 1));
+    }
+
+    return anotherPositions;
   }
 }

@@ -51,11 +51,9 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final mq = MediaQuery
-        .of(context)
-        .size;
+    final mq = MediaQuery.of(context);
     final navigationBottomPosition =
-        (mq.height / 2.0) - (StyleConstants.kDefaultButtonSize / 2.0);
+        (mq.size.height / 2.0) - (StyleConstants.kDefaultButtonSize / 2.0);
 
     return SafeArea(
       child: Scaffold(

@@ -1,6 +1,5 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:noko_prototype/src/features/map/domain/models/vehicle_route_destination.dart';
-import 'package:noko_prototype/src/features/map/domain/models/vehicle_data.dart';
 import 'package:noko_prototype/src/features/map/domain/models/vehicle_position.dart';
 
 enum MapIconBitmap {
@@ -15,11 +14,14 @@ enum MapThemeStyle {
 }
 
 class GeoBlocState {
-  final VehicleData? yourVehicle;
+  final int? yourVehicleID;
   final VehiclePosition? yourPosition;
   final VehicleRouteDestination? yourDestination;
   final List<LatLng> yourRoute;
 
+  final Set<int> selectedVehicleIDs;
+  final List<VehiclePosition>? nearestPositions;
+  final List<VehicleRouteDestination>? anotherDestinations;
   final List<VehiclePosition>? anotherPositions;
 
   final Map<MapIconBitmap, BitmapDescriptor>? icons;
@@ -28,10 +30,13 @@ class GeoBlocState {
   final MapThemeStyle currentMapTheme;
 
   const GeoBlocState({
-    this.yourVehicle,
+    this.yourVehicleID,
     this.yourPosition,
     this.yourDestination,
     this.yourRoute = const [],
+    this.selectedVehicleIDs = const {},
+    this.nearestPositions = const [],
+    this.anotherDestinations = const [],
     this.anotherPositions = const [],
     this.icons,
     this.utils = const MapUtilsState(),
@@ -52,22 +57,27 @@ class GeoBlocState {
   }
 
   GeoBlocState copyWith({
-    VehicleData? yourVehicle,
+    int? yourVehicleID,
     VehiclePosition? yourPosition,
     VehicleRouteDestination? yourDestination,
     List<LatLng>? yourRoute,
+    Set<int>? selectedVehicleIDs,
+    List<VehiclePosition>? nearestPositions,
+    List<VehicleRouteDestination>? anotherDestinations,
     List<VehiclePosition>? anotherPositions,
-    Set<VehicleRouteDestination>? anotherDestinations,
     Map<MapIconBitmap, BitmapDescriptor>? icons,
     MapUtilsState? utils,
     Map<MapThemeStyle, String>? mapThemes,
     MapThemeStyle? currentMapTheme,
   }) {
     return GeoBlocState(
-      yourVehicle: yourVehicle ?? this.yourVehicle,
+      yourVehicleID: yourVehicleID ?? this.yourVehicleID,
       yourPosition: yourPosition ?? this.yourPosition,
       yourDestination: yourDestination ?? this.yourDestination,
       yourRoute: yourRoute ?? this.yourRoute,
+      selectedVehicleIDs: selectedVehicleIDs ?? this.selectedVehicleIDs,
+      nearestPositions: nearestPositions ?? this.nearestPositions,
+      anotherDestinations: anotherDestinations ?? this.anotherDestinations,
       anotherPositions: anotherPositions ?? this.anotherPositions,
       icons: icons ?? this.icons,
       utils: utils != null ? this.utils.copyWith(utils) : this.utils,

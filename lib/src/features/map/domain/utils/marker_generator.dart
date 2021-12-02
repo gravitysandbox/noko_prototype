@@ -7,41 +7,29 @@ import 'package:flutter/rendering.dart';
 /// This just adds overlay and builds [_MarkerHelper] on that overlay.
 /// [_MarkerHelper] does all the heavy work of creating and getting bitmaps
 class MarkerGenerator {
-  final Function(List<Uint8List>) callback;
-  final List<Widget> markerWidgets;
-
-  const MarkerGenerator({
-    required this.markerWidgets,
-    required this.callback,
-  });
-
-  void generate(BuildContext context) {
+  void generate(List<Widget> markerWidgets, BuildContext context, Function(List<Uint8List>) callback) {
     WidgetsBinding.instance!
-        .addPostFrameCallback((_) => afterFirstLayout(context));
+        .addPostFrameCallback((_) => _addOverlay(markerWidgets, context, callback));
   }
 
-  void afterFirstLayout(BuildContext context) {
-    addOverlay(context);
-  }
-
-  void addOverlay(BuildContext context) {
+  void _addOverlay(List<Widget> markerWidgets, BuildContext context, Function(List<Uint8List>) callback) {
     OverlayState? overlayState = Overlay.of(context);
 
     late OverlayEntry entry;
     entry = OverlayEntry(
-        builder: (context) {
-          return _MarkerHelper(
-            markerWidgets: markerWidgets,
-            callback: (List<Uint8List> bitmapList) {
-              // Given callback function
-              callback.call(bitmapList);
-
-              // Remove marker widget stack from Overlay when finished
-              entry.remove();
-            },
-          );
-        },
-        maintainState: true);
+      builder: (context) {
+        return _MarkerHelper(
+          markerWidgets: markerWidgets,
+          callback: (List<Uint8List> bitmapList) {
+            // Given callback function
+            callback.call(bitmapList);
+            // Remove marker widget stack from Overlay when finished
+            entry.remove();
+          },
+        );
+      },
+      maintainState: true,
+    );
 
     overlayState!.insert(entry);
   }
@@ -108,7 +96,8 @@ class _MarkerHelperState extends State<_MarkerHelper> with AfterLayoutMixin {
   }
 
   Future<Uint8List> _getUint8List(GlobalKey markerKey) async {
-    RenderRepaintBoundary boundary = markerKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+    RenderRepaintBoundary boundary =
+        markerKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
     var image = await boundary.toImage(pixelRatio: 2.0);
     ByteData? byteData = await image.toByteData(format: ImageByteFormat.png);
     return byteData!.buffer.asUint8List();

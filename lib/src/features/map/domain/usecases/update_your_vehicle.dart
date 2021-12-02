@@ -4,10 +4,9 @@ import 'package:noko_prototype/core/models/usecase.dart';
 import 'package:noko_prototype/core/utils/logger.dart';
 import 'package:noko_prototype/src/features/map/domain/bloc/geo_bloc.dart';
 import 'package:noko_prototype/src/features/map/domain/bloc/geo_events.dart';
-import 'package:noko_prototype/src/features/map/domain/models/vehicle_data.dart';
 
 class UpdateYourVehicle
-    implements UseCase<Either<Failure, void>, VehicleData> {
+    implements UseCase<Either<Failure, void>, int> {
   final GeoBloc bloc;
 
   const UpdateYourVehicle({
@@ -15,10 +14,10 @@ class UpdateYourVehicle
   });
 
   @override
-  Future<Either<Failure, bool>> call(VehicleData vehicleData) async {
-    logPrint('UpdateYourVehicle -> call(${vehicleData.vehicleID})');
+  Future<Either<Failure, bool>> call(int vehicleID) async {
+    logPrint('UpdateYourVehicle -> call($vehicleID)');
     bloc.add(GeoUpdateYourVehicle(
-      yourVehicle: vehicleData,
+      yourVehicleID: vehicleID,
     ));
 
     return const Right(true);

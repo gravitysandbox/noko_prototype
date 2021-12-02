@@ -4,18 +4,21 @@ import 'package:noko_prototype/core/utils/logger.dart';
 import 'package:noko_prototype/src/features/map/domain/bloc/geo_bloc.dart';
 import 'package:noko_prototype/src/features/map/domain/datasources/map_remote_datasource.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/update_another_positions.dart';
+import 'package:noko_prototype/src/features/map/domain/usecases/update_nearest_positions.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/update_your_position.dart';
 
 class MapUpdater {
   final GeoBloc bloc;
   final MapRemoteDatasource mapRemoteDatasource;
-  final UpdateYourPosition updateCurrentPosition;
+  final UpdateYourPosition updateYourPosition;
+  final UpdateNearestPositions updateNearestPositions;
   final UpdateAnotherPositions updateAnotherPositions;
 
   MapUpdater({
     required this.bloc,
     required this.mapRemoteDatasource,
-    required this.updateCurrentPosition,
+    required this.updateYourPosition,
+    required this.updateNearestPositions,
     required this.updateAnotherPositions,
   });
 
@@ -24,22 +27,36 @@ class MapUpdater {
   void startTracking() {
     logPrint('MapUpdater -> startTracking()');
 
-    const int instantID = 12;
-    final int regionID = bloc.state.yourVehicle!.regionID;
-    final int vehicleID = bloc.state.yourVehicle!.vehicleID;
-    final int routeID = bloc.state.yourDestination!.routeID;
-    final List<int> busStopIDs = bloc.state.yourDestination!.busStops
+    const int instanceID = 12;
+    const int regionID = 3000;
+    final int yourVehicleID = bloc.state.yourVehicleID!;
+    final int yourRouteID = bloc.state.yourDestination!.routeID;
+    final List<int> yourBusStopIDs = bloc.state.yourDestination!.busStops
         .map((s) => s.busStopID)
         .toList();
 
     _timer = Timer.periodic(const Duration(seconds: 5), (_) {
       mapRemoteDatasource
           .getVehiclePosition(
-              instantID, regionID, vehicleID, routeID, busStopIDs)
+              instanceID, regionID, yourVehicleID, yourRouteID, yourBusStopIDs)
           .then((response) {
         if (response == null) return;
-        updateCurrentPosition(response.firstWhere((pos) => pos.vehicleID == vehicleID));
-        updateAnotherPositions(response.where((pos) => pos.vehicleID != vehicleID).toList());
+        updateYourPosition(
+            response.firstWhere((pos) => pos.vehicleID == yourVehicleID));
+        updateNearestPositions(
+            response.where((pos) => pos.vehicleID != yourVehicleID).toList());
+      });
+
+      if (bloc.state.selectedVehicleIDs.isEmpty) {
+        return;
+      }
+
+      mapRemoteDatasource
+          .getMultipleVehiclePosition(
+              instanceID, regionID, bloc.state.anotherDestinations!)
+          .then((response) {
+        if (response == null) return;
+        updateAnotherPositions.call(response);
       });
     });
   }

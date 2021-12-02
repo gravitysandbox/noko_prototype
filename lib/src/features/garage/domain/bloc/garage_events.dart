@@ -1,12 +1,31 @@
+import 'package:noko_prototype/src/features/map/domain/models/vehicle_data.dart';
+import 'package:noko_prototype/src/features/map/domain/models/vehicle_schedule_data.dart';
+import 'package:noko_prototype/src/features/map/domain/models/vehicle_timetable_data.dart';
+
 abstract class GarageBlocEvent {
   const GarageBlocEvent([List props = const []]) : super();
 }
 
+class GarageUpdateAllVehicles extends GarageBlocEvent {
+  final List<VehicleData> vehicles;
 
-class GarageUpdateTest extends GarageBlocEvent {
-  final bool test;
+  GarageUpdateAllVehicles({
+    required this.vehicles,
+  }) : super([vehicles]);
+}
 
-  GarageUpdateTest({
-    required this.test,
-  }) : super([test]);
+class GarageUpdateAllSchedules extends GarageBlocEvent {
+  final List<VehicleFullScheduleData?> schedules;
+
+  GarageUpdateAllSchedules({
+    required this.schedules,
+  }) : super([schedules]);
+}
+
+class GarageUpdateAllTimetables extends GarageBlocEvent {
+  final List<VehicleTimetableData?> timetables;
+
+  GarageUpdateAllTimetables({
+    required this.timetables,
+  }) : super([timetables]);
 }
