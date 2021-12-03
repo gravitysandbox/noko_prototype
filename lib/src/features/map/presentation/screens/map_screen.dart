@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -57,15 +59,6 @@ class _MapScreenState extends State<MapScreen> {
 
     return SafeArea(
       child: Scaffold(
-        floatingActionButton: Padding(
-          padding: const EdgeInsets.only(bottom: StyleConstants.kDefaultPadding),
-          child: FloatingActionButton(
-            child: const Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ),
         drawer: const _LeftSidebar(),
         endDrawer: const _RightSidebar(),
         body: Stack(
@@ -93,7 +86,26 @@ class _MapScreenState extends State<MapScreen> {
               right: 0.0,
               bottom: navigationBottomPosition,
               child: const NavigationButton(isLeft: false),
-            )
+            ),
+            if (Platform.isIOS)
+              Positioned(
+                bottom: 0.0,
+                left: StyleConstants.kDefaultPadding,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                      bottom: StyleConstants.kDefaultPadding),
+                  child: FloatingActionButton(
+                    child: const Icon(
+                      Icons.arrow_back,
+                      color: Colors.white,
+                    ),
+                    backgroundColor: StyleConstants.kPrimaryColor,
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ),
+              ),
           ],
         ),
       ),

@@ -18,15 +18,6 @@ class GarageScreen extends StatelessWidget {
         style: StyleConstants.kDarkTheme.textTheme.bodyText2!,
         child: Scaffold(
           backgroundColor: StyleConstants.kDarkColor(),
-          floatingActionButton: Padding(
-            padding: const EdgeInsets.only(bottom: StyleConstants.kDefaultPadding),
-            child: FloatingActionButton(
-              child: const Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ),
           appBar: AppBar(
             title: const Text('Гараж'),
           ),
