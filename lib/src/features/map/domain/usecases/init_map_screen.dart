@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
-import 'package:dartz/dartz_unsafe.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -17,7 +16,9 @@ import 'package:noko_prototype/src/features/map/domain/models/vehicle_position.d
 import 'package:noko_prototype/src/features/map/domain/models/vehicle_route_destination.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/update_another_destinations.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/update_another_positions.dart';
+import 'package:noko_prototype/src/features/map/domain/usecases/update_map_mode.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/update_nearest_positions.dart';
+import 'package:noko_prototype/src/features/map/domain/usecases/update_your_current_data.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/update_your_destination.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/update_your_position.dart';
 import 'package:noko_prototype/src/features/map/domain/utils/map_utils.dart';
@@ -31,9 +32,12 @@ class InitMapScreen implements UseCase<Either<Failure, void>, BuildContext> {
 
   final UpdateYourPosition updateYourPosition;
   final UpdateYourDestination updateYourDestination;
+  final UpdateYourCurrentData updateYourCurrentData;
+
   final UpdateNearestPositions updateNearestPositions;
   final UpdateAnotherDestinations updateAnotherDestinations;
   final UpdateAnotherPositions updateAnotherPositions;
+  final UpdateMapMode updateMapMode;
 
   const InitMapScreen({
     required this.geoBloc,
@@ -42,9 +46,11 @@ class InitMapScreen implements UseCase<Either<Failure, void>, BuildContext> {
     required this.mapRemoteDatasource,
     required this.updateYourPosition,
     required this.updateYourDestination,
+    required this.updateYourCurrentData,
     required this.updateNearestPositions,
     required this.updateAnotherDestinations,
     required this.updateAnotherPositions,
+    required this.updateMapMode,
   });
 
   @override
@@ -84,8 +90,10 @@ class InitMapScreen implements UseCase<Either<Failure, void>, BuildContext> {
     const int instantID = 12;
     const int regionID = 3000;
 
-    var amount = garageBloc.state.vehicles.length;
-    var counter = 0;
+    final time = DateTime.now();
+    final trueMonth = time.month.toString().length == 1 ? '0${time.month}' : '${time.month}';
+    final trueDay = time.day.toString().length == 1 ? '0${time.day}' : '${time.day}';
+    final String date = '${time.year}-$trueMonth-$trueDay';
 
     final vehicles = garageBloc.state.vehicles;
     if (vehicles.isEmpty) {
@@ -100,19 +108,22 @@ class InitMapScreen implements UseCase<Either<Failure, void>, BuildContext> {
     final anotherDestinations = <VehicleRouteDestination>[];
     final anotherPositions = <VehiclePosition>[];
 
+    var amount = selectedVehicles.length;
+    var counter = 0;
+
     selectedVehicles.forEach((vehicle) async {
       /// Get vehicle bus stops
-      var busStops = await mapRemoteDatasource.getVehicleBusStops(
+      final vehicleIndex = garageBloc.state.vehicles.indexOf(vehicle);
+      final busStops = await mapRemoteDatasource.getVehicleBusStops(
         instantID,
         vehicle.vehicleID,
       );
 
-      if (busStops == null) {
+      if (busStops == null || busStops.isEmpty) {
         counter++;
         return;
       }
 
-      var vehicleIndex = garageBloc.state.vehicles.indexOf(vehicle);
       var routeID =
           garageBloc.state.timetables[vehicleIndex]!.timetable[0].routeID;
 
@@ -144,6 +155,18 @@ class InitMapScreen implements UseCase<Either<Failure, void>, BuildContext> {
         updateNearestPositions.call(positions
             .where((pos) => pos.vehicleID != vehicle.vehicleID)
             .toList());
+
+        /// Get current vehicle route data
+        var routeData = await mapRemoteDatasource.getVehicleRouteData(
+          instantID,
+          regionID,
+          vehicle.vehicleID,
+          date,
+        );
+
+        if (routeData != null) {
+          updateYourCurrentData.call(routeData);
+        }
       } else {
         anotherDestinations.add(VehicleRouteDestination(
           vehicleID: vehicle.vehicleID,
@@ -167,6 +190,7 @@ class InitMapScreen implements UseCase<Either<Failure, void>, BuildContext> {
       updateAnotherPositions.call(anotherPositions);
     }
 
+    updateMapMode.call(true);
     return const Right(true);
   }
 }

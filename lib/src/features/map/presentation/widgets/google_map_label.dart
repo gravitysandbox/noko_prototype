@@ -7,6 +7,8 @@ import 'package:intl/intl.dart';
 import 'package:noko_prototype/core/constants.dart';
 import 'package:noko_prototype/src/features/map/domain/bloc/geo_bloc.dart';
 import 'package:noko_prototype/src/features/map/domain/bloc/geo_state.dart';
+import 'package:noko_prototype/src/features/map/domain/models/vehicle_bus_stop_data.dart';
+import 'package:noko_prototype/src/features/map/domain/models/vehicle_route_data.dart';
 import 'package:noko_prototype/src/features/map/domain/models/vehicle_route_destination.dart';
 
 class GoogleMapLabel extends StatefulWidget {
@@ -46,9 +48,22 @@ class _GoogleMapLabelState extends State<GoogleMapLabel> {
     });
   }
 
-  Widget _buildDestinationLabel(VehicleRouteDestination? destination) {
+  Widget _buildDestinationLabel(
+      VehicleRouteDestination? destination, VehicleRouteData? routeData) {
+    VehicleBusStopData? nextBusStop;
+    if (destination != null && routeData != null) {
+      var busStopIndex = destination.busStops
+          .indexWhere((stop) => stop.busStopID == routeData.nextBusStopID);
+      nextBusStop =
+          busStopIndex != -1 ? destination.busStops[busStopIndex] : null;
+    }
+
     return Text(
-      destination != null ? destination.destinationBusStop.busStopName : '...',
+      nextBusStop != null
+          ? nextBusStop.busStopName
+          : destination != null
+              ? destination.destinationBusStop.busStopName
+              : '...',
       style: const TextStyle(
         fontSize: 16.0,
         overflow: TextOverflow.ellipsis,
@@ -60,7 +75,9 @@ class _GoogleMapLabelState extends State<GoogleMapLabel> {
   Widget build(BuildContext context) {
     return BlocBuilder<GeoBloc, GeoBlocState>(
       buildWhen: (prev, current) {
-        return prev.yourDestination!.routeID != current.yourDestination!.routeID;
+        return prev.yourCurrentData?.nextBusStopID !=
+                current.yourCurrentData?.nextBusStopID ||
+            prev.yourDestination?.routeID != current.yourDestination?.routeID;
       },
       builder: (context, state) {
         return SizedBox(
@@ -94,7 +111,8 @@ class _GoogleMapLabelState extends State<GoogleMapLabel> {
                         ),
                       ),
                       Expanded(
-                        child: _buildDestinationLabel(state.yourDestination),
+                        child: _buildDestinationLabel(
+                            state.yourDestination, state.yourCurrentData),
                       ),
                     ],
                   ),

@@ -23,7 +23,7 @@ class _MapSettingsScreenState extends State<MapSettingsScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_isInit) {
-      locator<InitMapScreen>().call(context);
+      // locator<InitMapScreen>().call(context);
       _isInit = true;
     }
   }

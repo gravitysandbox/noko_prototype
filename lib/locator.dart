@@ -5,6 +5,7 @@ import 'package:noko_prototype/core/usecases/update_app_theme.dart';
 import 'package:noko_prototype/src/features/garage/domain/bloc/garage_bloc.dart';
 import 'package:noko_prototype/src/features/garage/domain/bloc/garage_state.dart';
 import 'package:noko_prototype/src/features/garage/domain/datasources/garage_remote_datasource.dart';
+import 'package:noko_prototype/src/features/garage/domain/usecases/update_all_bus_stops.dart';
 import 'package:noko_prototype/src/features/garage/domain/usecases/update_all_schedules.dart';
 import 'package:noko_prototype/src/features/garage/domain/usecases/update_all_timetables.dart';
 import 'package:noko_prototype/src/features/garage/domain/usecases/update_all_vehicles.dart';
@@ -15,7 +16,10 @@ import 'package:noko_prototype/src/features/map/domain/datasources/map_remote_da
 import 'package:noko_prototype/src/features/map/domain/usecases/init_map_screen.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/update_another_destinations.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/update_another_positions.dart';
+import 'package:noko_prototype/src/features/map/domain/usecases/update_map_mode.dart';
+import 'package:noko_prototype/src/features/map/domain/usecases/update_map_selected_vehicles.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/update_nearest_positions.dart';
+import 'package:noko_prototype/src/features/map/domain/usecases/update_your_current_data.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/update_your_destination.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/update_map_theme.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/update_map_utils.dart';
@@ -62,6 +66,7 @@ void _initGoogleMap() {
         bloc: locator<GeoBloc>(),
         mapRemoteDatasource: locator<MapRemoteDatasource>(),
         updateYourPosition: locator<UpdateYourPosition>(),
+        updateYourCurrentData: locator<UpdateYourCurrentData>(),
         updateNearestPositions: locator<UpdateNearestPositions>(),
         updateAnotherPositions: locator<UpdateAnotherPositions>(),
       ));
@@ -75,9 +80,11 @@ void _initGoogleMap() {
         mapRemoteDatasource: locator<MapRemoteDatasource>(),
         updateYourPosition: locator<UpdateYourPosition>(),
         updateYourDestination: locator<UpdateYourDestination>(),
+        updateYourCurrentData: locator<UpdateYourCurrentData>(),
         updateNearestPositions: locator<UpdateNearestPositions>(),
         updateAnotherDestinations: locator<UpdateAnotherDestinations>(),
         updateAnotherPositions: locator<UpdateAnotherPositions>(),
+        updateMapMode: locator<UpdateMapMode>(),
       ));
   locator.registerLazySingleton(() => UpdateYourVehicle(
         bloc: locator<GeoBloc>(),
@@ -93,6 +100,14 @@ void _initGoogleMap() {
         bloc: locator<GeoBloc>(),
         mapUtils: locator<MapUtils>(),
       ));
+  locator.registerLazySingleton(() => UpdateYourCurrentData(
+        bloc: locator<GeoBloc>(),
+      ));
+  locator.registerLazySingleton(() => UpdateMapSelectedVehicles(
+        geoBloc: locator<GeoBloc>(),
+        garageBloc: locator<GarageBloc>(),
+        updateAnotherDestinations: locator<UpdateAnotherDestinations>(),
+      ));
   locator.registerLazySingleton(() => UpdateNearestPositions(
         bloc: locator<GeoBloc>(),
       ));
@@ -105,8 +120,12 @@ void _initGoogleMap() {
       ));
   locator.registerLazySingleton(() => UpdateAnotherDestinations(
         bloc: locator<GeoBloc>(),
+        updateAnotherPositions: locator<UpdateAnotherPositions>(),
       ));
   locator.registerLazySingleton(() => UpdateAnotherPositions(
+        bloc: locator<GeoBloc>(),
+      ));
+  locator.registerLazySingleton(() => UpdateMapMode(
         bloc: locator<GeoBloc>(),
       ));
 }
@@ -128,6 +147,7 @@ void _initGarage() {
         updateAllVehicles: locator<UpdateAllVehicles>(),
         updateAllSchedules: locator<UpdateAllSchedules>(),
         updateAllTimetables: locator<UpdateAllTimetables>(),
+        updateAllBusStops: locator<UpdateAllBusStops>(),
         updateYourVehicle: locator<UpdateYourVehicle>(),
       ));
   locator.registerLazySingleton(() => UpdateAllVehicles(
@@ -137,6 +157,9 @@ void _initGarage() {
         bloc: locator<GarageBloc>(),
       ));
   locator.registerLazySingleton(() => UpdateAllTimetables(
+        bloc: locator<GarageBloc>(),
+      ));
+  locator.registerLazySingleton(() => UpdateAllBusStops(
         bloc: locator<GarageBloc>(),
       ));
 }

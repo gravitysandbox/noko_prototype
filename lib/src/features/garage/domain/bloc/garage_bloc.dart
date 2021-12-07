@@ -36,6 +36,15 @@ class GarageBloc extends Bloc<GarageBlocEvent, GarageBlocState> {
           );
           break;
         }
+
+      case GarageUpdateAllBusStops:
+        {
+          var snapshot = event as GarageUpdateAllBusStops;
+          yield state.copyWith(
+            busStops: snapshot.busStops,
+          );
+          break;
+        }
     }
   }
 }

@@ -6,12 +6,14 @@ class MapMarker extends StatelessWidget {
   final String description;
   final int vector;
   final bool isDark;
+  final bool isAnother;
 
   const MapMarker({
     Key? key,
     required this.description,
     required this.vector,
     this.isDark = false,
+    this.isAnother = false,
   }) : super(key: key);
 
   static const markerHeight = 60.0;
@@ -42,7 +44,7 @@ class MapMarker extends StatelessWidget {
                   topRight: Radius.circular(5.0),
                   bottomRight: Radius.circular(5.0),
                 ),
-                color: isDark ? Colors.blueGrey.shade800: Colors.white,
+                color: isDark ? Colors.blueGrey.shade800 : Colors.white,
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -66,7 +68,9 @@ class MapMarker extends StatelessWidget {
             angle: angle,
             child: CustomPaint(
               size: const Size(markerHeight, markerHeight),
-              painter: TransportIconPainter(),
+              painter: TransportIconPainter(
+                isAnother: isAnother,
+              ),
             ),
           ),
           SizedBox(
@@ -75,10 +79,10 @@ class MapMarker extends StatelessWidget {
             child: Center(
               child: Container(
                 padding: const EdgeInsets.all(4.0),
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.all(
                       Radius.circular(descriptionHeight * 0.5)),
-                  color: Colors.green,
+                  color: isAnother ? Colors.red : Colors.green,
                 ),
                 child: Image.asset(
                   'assets/icons/ic_shuttle_route_white.png',
@@ -96,10 +100,14 @@ class MapMarker extends StatelessWidget {
 }
 
 class TransportIconPainter extends CustomPainter {
+  final bool isAnother;
+
+  TransportIconPainter({required this.isAnother});
+
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint()
-      ..color = Colors.green
+      ..color = isAnother ? Colors.red : Colors.green
       ..style = PaintingStyle.fill
       ..strokeWidth = 0;
 

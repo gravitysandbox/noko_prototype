@@ -46,11 +46,47 @@ class GeoBloc extends Bloc<GeoBlocEvent, GeoBlocState> {
           break;
         }
 
+      case GeoUpdateYourCurrentData:
+        {
+          var snapshot = event as GeoUpdateYourCurrentData;
+          yield state.copyWith(
+            yourCurrentData: snapshot.yourData,
+          );
+          break;
+        }
+
+      case GeoUpdateSelectedVehicles:
+        {
+          var snapshot = event as GeoUpdateSelectedVehicles;
+          yield state.copyWith(
+            selectedVehicleIDs: snapshot.vehicles,
+          );
+          break;
+        }
+
       case GeoUpdateNearestPositions:
         {
           var snapshot = event as GeoUpdateNearestPositions;
           yield state.copyWith(
-            anotherPositions: snapshot.nearestPositions,
+            nearestPositions: snapshot.nearestPositions,
+          );
+          break;
+        }
+
+      case GeoUpdateAnotherDestinations:
+        {
+          var snapshot = event as GeoUpdateAnotherDestinations;
+          yield state.copyWith(
+            anotherDestinations: snapshot.anotherDestinations,
+          );
+          break;
+        }
+
+      case GeoUpdateAnotherPositions:
+        {
+          var snapshot = event as GeoUpdateAnotherPositions;
+          yield state.copyWith(
+            anotherPositions: snapshot.anotherPositions,
           );
           break;
         }
@@ -87,6 +123,15 @@ class GeoBloc extends Bloc<GeoBlocEvent, GeoBlocState> {
           var snapshot = event as GeoUpdateCurrentMapTheme;
           yield state.copyWith(
             currentMapTheme: snapshot.mapTheme,
+          );
+          break;
+        }
+
+      case GeoUpdateMapMode:
+        {
+          var snapshot = event as GeoUpdateMapMode;
+          yield state.copyWith(
+            isInit: snapshot.isInit,
           );
           break;
         }

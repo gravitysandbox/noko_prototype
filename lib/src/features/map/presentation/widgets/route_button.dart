@@ -23,8 +23,7 @@ class RouteButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: callback,
-      child: Container(
-        height: StyleConstants.kDefaultButtonSize * 0.9,
+      child: DecoratedBox(
         decoration: BoxDecoration(
           color: isActive ? _busActiveColor : null,
           border: Border.all(
@@ -34,8 +33,7 @@ class RouteButton extends StatelessWidget {
           borderRadius: const BorderRadius.all(
               Radius.circular(StyleConstants.kDefaultButtonSize * 0.2)),
         ),
-        child: Align(
-          alignment: Alignment.center,
+        child: Center(
           child: Text(
             label,
             style: TextStyle(

@@ -1,3 +1,4 @@
+import 'package:noko_prototype/src/features/map/domain/models/vehicle_bus_stop_data.dart';
 import 'package:noko_prototype/src/features/map/domain/models/vehicle_data.dart';
 import 'package:noko_prototype/src/features/map/domain/models/vehicle_schedule_data.dart';
 import 'package:noko_prototype/src/features/map/domain/models/vehicle_timetable_data.dart';
@@ -28,4 +29,12 @@ class GarageUpdateAllTimetables extends GarageBlocEvent {
   GarageUpdateAllTimetables({
     required this.timetables,
   }) : super([timetables]);
+}
+
+class GarageUpdateAllBusStops extends GarageBlocEvent {
+  final List<List<VehicleBusStopData>?> busStops;
+
+  GarageUpdateAllBusStops({
+    required this.busStops,
+  }) : super([busStops]);
 }

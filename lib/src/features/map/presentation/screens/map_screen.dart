@@ -10,8 +10,12 @@ import 'package:noko_prototype/core/widgets/custom_icon_button.dart';
 import 'package:noko_prototype/core/widgets/scrollable_wrapper.dart';
 import 'package:noko_prototype/locator.dart';
 import 'package:noko_prototype/core/constants.dart';
+import 'package:noko_prototype/src/features/garage/domain/bloc/garage_bloc.dart';
+import 'package:noko_prototype/src/features/garage/domain/bloc/garage_state.dart';
 import 'package:noko_prototype/src/features/map/domain/bloc/geo_bloc.dart';
 import 'package:noko_prototype/src/features/map/domain/bloc/geo_state.dart';
+import 'package:noko_prototype/src/features/map/domain/models/vehicle_data.dart';
+import 'package:noko_prototype/src/features/map/domain/usecases/update_map_selected_vehicles.dart';
 import 'package:noko_prototype/src/features/map/domain/usecases/update_map_utils.dart';
 import 'package:noko_prototype/src/features/map/domain/utils/map_updater.dart';
 import 'package:noko_prototype/src/features/map/presentation/screens/custom_sidebar.dart';
@@ -60,7 +64,25 @@ class _MapScreenState extends State<MapScreen> {
     return SafeArea(
       child: Scaffold(
         drawer: const _LeftSidebar(),
-        endDrawer: const _RightSidebar(),
+        endDrawer: BlocBuilder<GarageBloc, GarageBlocState>(
+          builder: (context, state) {
+            final activeVehicles = state.vehicles.where((vehicle) {
+              var index = state.vehicles.indexOf(vehicle);
+              return state.schedules[index] != null &&
+                  state.timetables[index] != null &&
+                  state.busStops[index] != null;
+            }).toList();
+            final activeRoutes = activeVehicles.map((vehicle) {
+              var index = state.vehicles.indexOf(vehicle);
+              return state.timetables[index]!.timetable[0].routeID;
+            }).toList();
+
+            return _RightSidebar(
+              activeVehicles: activeVehicles,
+              activeRoutes: activeRoutes,
+            );
+          },
+        ),
         body: Stack(
           fit: StackFit.expand,
           children: <Widget>[
@@ -294,15 +316,18 @@ class _LeftSidebar extends StatelessWidget {
 }
 
 class _RightSidebar extends StatelessWidget {
-  const _RightSidebar({Key? key}) : super(key: key);
+  final List<VehicleData> activeVehicles;
+  final List<int> activeRoutes;
 
-  static const Map<String, bool> _routes = {
-    'M 16, Gomel MT': true,
-    'A 126, Gomel AP': true,
-    'M 17, Gomel MT': true,
-    'T 10, Gomel': false,
-    'M 12, Gomel': false,
-  };
+  const _RightSidebar({
+    Key? key,
+    required this.activeVehicles,
+    required this.activeRoutes,
+  }) : super(key: key);
+
+  void _onSelectRouteHandler(int index) {
+    locator<UpdateMapSelectedVehicles>().call(activeVehicles[index]);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -355,20 +380,27 @@ class _RightSidebar extends StatelessWidget {
                 ),
               ),
               Expanded(
-                child: ListView.separated(
-                  itemCount: _routes.length,
-                  physics: const BouncingScrollPhysics(),
-                  separatorBuilder: (context, index) {
-                    return const SizedBox(
-                      height: StyleConstants.kDefaultPadding,
-                    );
-                  },
-                  itemBuilder: (context, index) {
-                    return RouteButton(
-                      label: _routes.keys.toList()[index],
-                      callback: () {},
-                      isActive: _routes.values.toList()[index],
-                      isDark: state.isDarkTheme,
+                child: BlocBuilder<GeoBloc, GeoBlocState>(
+                  builder: (context, geo) {
+                    return GridView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: activeVehicles.length,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        childAspectRatio: 1.5,
+                        mainAxisSpacing: StyleConstants.kDefaultPadding * 0.5,
+                        crossAxisSpacing: StyleConstants.kDefaultPadding * 0.5,
+                      ),
+                      itemBuilder: (context, index) {
+                        return RouteButton(
+                          label: activeRoutes[index].toString(),
+                          callback: () => _onSelectRouteHandler(index),
+                          isActive: geo.selectedVehicleIDs
+                              .contains(activeVehicles[index].vehicleID),
+                          isDark: state.isDarkTheme,
+                        );
+                      },
                     );
                   },
                 ),

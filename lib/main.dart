@@ -11,7 +11,6 @@ import 'package:noko_prototype/src/features/home/presentation/screens/home_scree
 import 'package:noko_prototype/src/features/map/domain/bloc/geo_bloc.dart';
 import 'package:noko_prototype/src/features/map/presentation/screens/map_screen.dart';
 import 'package:noko_prototype/src/features/map/presentation/screens/map_settings_screen.dart';
-import 'package:noko_prototype/src/features/map/presentation/screens/temp_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -55,7 +54,6 @@ class MyApp extends StatelessWidget {
               HomeScreen.routeName: (context) => const HomeScreen(),
               MapScreen.routeName: (context) => const MapScreen(),
               MapSettingsScreen.routeName: (context) => const MapSettingsScreen(),
-              TempScreen.routeName: (context) => const TempScreen(),
               GarageScreen.routeName: (context) => const GarageScreen(),
             },
           );

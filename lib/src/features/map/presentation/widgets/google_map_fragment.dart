@@ -31,6 +31,7 @@ class _GoogleMapFragmentState extends State<GoogleMapFragment> {
   final Completer<GoogleMapController> _mapController = Completer();
   Set<Marker> _nearestMarkers = {};
   Set<Marker> _anotherMarkers = {};
+  Set<Marker> _stopsMarkers = {};
   bool _isInit = false;
 
   void _generateMarkerBitmaps(
@@ -39,9 +40,10 @@ class _GoogleMapFragmentState extends State<GoogleMapFragment> {
     locator<MarkerGenerator>().generate(
       vehicles
           .map((pos) => MapMarker(
-                description: pos.routeNumber,
+                description: '${pos.routeNumber} ${pos.advanceTime}',
                 vector: pos.vector,
                 isDark: isDark,
+                isAnother: !isNearestMarkers,
               ))
           .toList(),
       context,
@@ -90,14 +92,6 @@ class _GoogleMapFragmentState extends State<GoogleMapFragment> {
         zIndex: 10,
       ));
 
-      for (var stop in state.yourDestination!.busStops) {
-        markersToShow.add(Marker(
-          markerId: MarkerId(stop.busStopName),
-          icon: state.icons![MapIconBitmap.busStop]!,
-          position: stop.busStopPosition,
-        ));
-      }
-
       if (state.utils.isTrackingEnabled!) {
         Future.delayed(const Duration(milliseconds: 500)).then((_) {
           _moveCamera(state.yourPosition!.position);
@@ -105,18 +99,24 @@ class _GoogleMapFragmentState extends State<GoogleMapFragment> {
       }
     }
 
-    if (state.nearestPositions != null && state.nearestPositions!.isNotEmpty) {
+    if (state.nearestPositions.isNotEmpty) {
       Future.delayed(Duration.zero).then((_) => _generateMarkerBitmaps(
-          state.nearestPositions!,
-          state.currentMapTheme == MapThemeStyle.dark,
-          true));
+            state.nearestPositions,
+            state.currentMapTheme == MapThemeStyle.dark,
+            true,
+          ));
+    } else if (_nearestMarkers.isNotEmpty) {
+      _nearestMarkers.clear();
     }
 
-    if (state.anotherPositions != null && state.anotherPositions!.isNotEmpty) {
+    if (state.anotherPositions.isNotEmpty) {
       Future.delayed(Duration.zero).then((_) => _generateMarkerBitmaps(
-          state.anotherPositions!,
-          state.currentMapTheme == MapThemeStyle.dark,
-          false));
+            state.anotherPositions,
+            state.currentMapTheme == MapThemeStyle.dark,
+            false,
+          ));
+    } else if (_anotherMarkers.isNotEmpty) {
+      _anotherMarkers.clear();
     }
 
     return markersToShow;
@@ -148,7 +148,7 @@ class _GoogleMapFragmentState extends State<GoogleMapFragment> {
 
     if (!_isInit) {
       _generateMarkerBitmaps(
-        state.nearestPositions!,
+        state.nearestPositions,
         state.currentMapTheme == MapThemeStyle.dark,
         true,
         withRebuild: true,
@@ -156,6 +156,13 @@ class _GoogleMapFragmentState extends State<GoogleMapFragment> {
 
       setState(() {
         _isInit = true;
+        _stopsMarkers = state.yourDestination!.busStops
+            .map((stop) => Marker(
+                  markerId: MarkerId(stop.busStopName),
+                  icon: state.icons![MapIconBitmap.busStop]!,
+                  position: stop.busStopPosition,
+                ))
+            .toSet();
       });
     }
   }
@@ -180,6 +187,7 @@ class _GoogleMapFragmentState extends State<GoogleMapFragment> {
   @override
   Widget build(BuildContext context) {
     final mq = MediaQuery.of(context);
+    const loadingSize = 100.0;
 
     return BlocConsumer<GeoBloc, GeoBlocState>(
       listener: (context, state) {
@@ -204,6 +212,7 @@ class _GoogleMapFragmentState extends State<GoogleMapFragment> {
               markers: {
                 ..._nearestMarkers,
                 ..._anotherMarkers,
+                ..._stopsMarkers,
                 ..._updateMarkers(state)
               },
               polylines: (state.utils.isRouteEnabled ?? false)
@@ -212,9 +221,11 @@ class _GoogleMapFragmentState extends State<GoogleMapFragment> {
             ),
             if (!_isInit)
               Positioned(
-                left: (mq.size.width * 0.5) - (LoadingIndicator.size * 0.5),
-                bottom: (mq.size.height * 0.5) - (LoadingIndicator.size * 0.5),
-                child: const LoadingIndicator(),
+                left: (mq.size.width * 0.5) - (loadingSize * 0.5),
+                bottom: (mq.size.height * 0.5) - (loadingSize * 0.5),
+                child: const LoadingIndicator(
+                  size: loadingSize,
+                ),
               ),
           ],
         );
